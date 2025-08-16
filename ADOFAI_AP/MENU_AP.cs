@@ -102,8 +102,6 @@ namespace ADOFAI_AP
             {
                 ADOFAI_AP.Instance.mls.LogInfo($"Connecting to {serverIP}:{serverPort}...");
                 ADOFAI_AP.Instance.client.Connect(serverIP, int.Parse(serverPort), pseudo);
-                isConnected = true; // Set this to true when the connection is established
-                currentMenu = MenuState.Main; // Switch to the main menu after connecting
                 ADOFAI_AP.Instance.mls.LogInfo("Connected to server.");
             }
             GUILayout.EndHorizontal();
@@ -199,7 +197,7 @@ namespace ADOFAI_AP
 
             if (GUILayout.Button("Close Menu"))
             {
-                ToggleMenu();
+                currentMenu = MenuState.None;
             }
             GUILayout.EndArea();
         }

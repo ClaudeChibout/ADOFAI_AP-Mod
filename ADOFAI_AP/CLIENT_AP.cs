@@ -37,6 +37,8 @@ namespace ADOFAI_AP
 
             if (isConnected.Successful)
             {
+                ADOFAI_AP.Instance.Menu.isConnected = true;
+                ADOFAI_AP.Instance.Menu.currentMenu = MENU_AP.MenuState.Main;
                 // Initialize the mod data
                 foreach (long levelId in session.Locations.AllLocationsChecked)
                 {
