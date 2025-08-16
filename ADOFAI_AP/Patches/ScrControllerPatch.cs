@@ -50,7 +50,7 @@ namespace ADOFAI_AP.Patches
             {
                 // We don't have access to the portal destination, so we restart the scene to not crash the game.
                 ADOFAI_AP.Instance.mls.LogInfo($"PortalTravelAction called: {___portalDestination}\nargs: {___portalArguments} (not unlocked)");
-                scnGame.RestartScene();
+                global::scnGame.RestartScene();
                 return false;
             }
 
@@ -62,6 +62,20 @@ namespace ADOFAI_AP.Patches
         {
             ADOFAI_AP.Instance.mls.LogInfo($"Restart called: {scrController.currentLevel} !");
             // We restart the scene.
+            return true;
+        }
+
+        [HarmonyPatch("EnterLevel")]
+        [HarmonyPrefix]
+        static bool EnterLevel(string worldAndLevel, bool speedTrial)
+        {
+            ADOFAI_AP.Instance.mls.LogInfo($"LoadLevel called with path: {worldAndLevel}");
+            if (Data_AP.ItemsReceived.ContainsKey($"Key_Level_{worldAndLevel}") && !Data_AP.ItemsReceived[$"Key_Level_{worldAndLevel}"])
+            {   
+                scrController.instance.QuitToMainMenu();
+                return false;
+            }
+            
             return true;
         }
 
