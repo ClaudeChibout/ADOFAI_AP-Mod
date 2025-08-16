@@ -127,8 +127,10 @@ namespace ADOFAI_AP
             GUILayout.BeginHorizontal();
                 var cpt = 0;
                 foreach (var level in Data_AP.ItemsReceived.Keys)
-                {
-                    if (Data_AP.ItemsReceived[level] && (!Data_AP.LocationsChecked[level.Substring(10)] || showCheckedLocation) )
+                {   
+                    
+                    
+                    if (level.StartsWith("Key_Level_") && Data_AP.ItemsReceived[level] && (!Data_AP.LocationsChecked[level.Substring(10)] || showCheckedLocation) )
                     {
                         var levelName = level.Substring(10); // Extract the level name
                         cpt++;
