@@ -23,7 +23,7 @@ namespace ADOFAI_AP.Patches
 
                 return false;
             }
-            else if (___portalDestination != Portal.GoToWorldBossIfReached)
+            else if (___portalDestination == Portal.GoToWorldBossIfReached)
             {
                 // To prevent travel from lobby portals
                 scrController.instance.QuitToMainMenu();
