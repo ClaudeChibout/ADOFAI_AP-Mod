@@ -81,7 +81,7 @@
     <Compile Include="ADOFAI_AP.cs" />
     <Compile Include="CLIENT_AP.cs" />
     <Compile Include="MENU_AP.cs" />
-    <Compile Include="Patches\Data_AP.cs" />
+    <Compile Include="Data_AP.cs" />
     <Compile Include="Patches\PlanetarySystemPatch.cs" />
     <Compile Include="Patches\ScrControllerPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
