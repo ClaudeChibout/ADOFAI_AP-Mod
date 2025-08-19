@@ -118,19 +118,32 @@ namespace ADOFAI_AP
                 currentMenu = MenuState.Main; // Switch back to main menu
             }
 
-            if (GUILayout.Toggle(showCheckedLocation, "showCheckedLevel")) { 
+            if (GUILayout.Toggle(showCheckedLocation, "showCheckedLevel"))
+            {
                 showCheckedLocation = true;
-            } else {
+            }
+            else
+            {
                 showCheckedLocation = false;
             }
 
             GUILayout.BeginHorizontal();
-                var cpt = 0;
-                foreach (var level in Data_AP.ItemsReceived.Keys)
-                {   
-                    
-                    
-                    if (level.StartsWith("Key_Level_") && Data_AP.ItemsReceived[level] && (!Data_AP.LocationsChecked[level.Substring(10)] || showCheckedLocation) )
+            var cpt = 0;
+            foreach (var level in Data_AP.ItemsReceived.Keys)
+            {
+                // Skip levels that are not in the format "Key_Level_X-Y"
+                ADOFAI_AP.Instance.mls.LogInfo($"Checking level: {level}");
+
+                if (level == "Filler Note")
+                {
+                    // Skip the filler note
+                    ADOFAI_AP.Instance.mls.LogInfo("Skipping Filler Note level.");
+                    continue;
+                }
+
+                try
+                {
+                    if (Data_AP.ItemsReceived[level] && (!Data_AP.LocationsChecked[level.Substring(10)] || showCheckedLocation))
                     {
                         var levelName = level.Substring(10); // Extract the level name
                         cpt++;
@@ -140,26 +153,34 @@ namespace ADOFAI_AP
                             GUILayout.BeginHorizontal();
                         }
 
-                        if (Data_AP.LocationsChecked[levelName]) { 
+                        if (Data_AP.LocationsChecked[levelName])
+                        {
                             GUI.backgroundColor = UnityEngine.Color.gray;
-                        } else {
+                        }
+                        else
+                        {
                             GUI.backgroundColor = UnityEngine.Color.green;
                         }
 
-                    if (GUILayout.Button(levelName))
+                        if (GUILayout.Button(levelName))
                         {
                             ADOFAI_AP.Instance.mls.LogInfo($"Selected level: {levelName}");
-                            currentMenu = MenuState.None; 
+                            currentMenu = MenuState.None;
                             ADOBase.controller.EnterLevel(levelName, false);
                         }
                     }
                 }
+                catch (Exception e)
+                {
+                    ADOFAI_AP.Instance.mls.LogError($"Error processing level {level}: {e.Message}");
+                }
 
+            }
             GUILayout.EndHorizontal();
             GUI.backgroundColor = UnityEngine.Color.magenta;
             GUILayout.EndArea();
-        }
 
+        }
         void DrawMainMenu()
         {
             GUI.backgroundColor = UnityEngine.Color.magenta;
@@ -176,9 +197,9 @@ namespace ADOFAI_AP
             }
             catch (NullReferenceException)
             {
-                
+
             }*/
-            
+
             /*var t = toggleFloor ? "disable" : "enable";
             if (GUILayout.Button($"{t} floors"))
             {
