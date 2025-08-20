@@ -57,7 +57,7 @@ namespace ADOFAI_AP
         {   
 
             float xDivisor = 4f; // Divisor for the width of the notification box
-            float yDivisor = 16f; // Divisor for the height of the notification box
+            float yDivisor = 14f; // Divisor for the height of the notification box
 
             float x = Screen.width - Screen.width / xDivisor;
             float y = Screen.height - (Screen.height / yDivisor) * (notificationCount - firstNotification);
@@ -70,7 +70,7 @@ namespace ADOFAI_AP
                 text = notifications[i];
                 // Draw the notification on the screen
                 var yOffset = (i - firstNotification) * (Screen.height / yDivisor);
-                GUI.Label(new Rect(x + 10, y + yOffset + ((Screen.height / yDivisor) / 2), width - 20, height - 20), text);
+                GUI.Label(new Rect(x + 10, y + yOffset + ((Screen.height / yDivisor) / 3), width - 20, height - 20), text);
             }
 
         }
