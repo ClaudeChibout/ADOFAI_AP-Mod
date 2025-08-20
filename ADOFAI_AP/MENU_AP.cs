@@ -143,12 +143,12 @@ namespace ADOFAI_AP
             foreach (var level in Data_AP.ItemsReceived.Keys)
             {
                 // Skip levels that are not in the format "Key_Level_X-Y"
-                ADOFAI_AP.Instance.mls.LogInfo($"Checking level: {level}");
+                //ADOFAI_AP.Instance.mls.LogInfo($"Checking level: {level}");
 
                 if (level == "Filler Note")
                 {
                     // Skip the filler note
-                    ADOFAI_AP.Instance.mls.LogInfo("Skipping Filler Note level.");
+                    //ADOFAI_AP.Instance.mls.LogInfo("Skipping Filler Note level.");
                     continue;
                 }
 
