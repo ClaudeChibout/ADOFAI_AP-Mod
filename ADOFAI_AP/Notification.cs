@@ -12,7 +12,7 @@ namespace ADOFAI_AP
         public static Notification Instance;
         private string text;
         
-        static Dictionary<int, string> notifications = new Dictionary<int, string>();
+        static readonly Dictionary<int, string> notifications = new Dictionary<int, string>();
 
         internal int notificationCount = 0;
         static int firstNotification = 0; // This will be used to track the first notification for removal

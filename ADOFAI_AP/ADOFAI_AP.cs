@@ -33,6 +33,9 @@ namespace ADOFAI_AP
 
         internal CLIENT_AP client = null;
 
+        //internal bool speedEnabled = false;
+        //internal double speed = 1.8; 
+
 
 
         void Awake()
@@ -75,6 +78,22 @@ namespace ADOFAI_AP
 
         void Update()
         {
+            if ( Input.GetKeyDown(KeyCode.Keypad2) )
+            {
+                scrController.instance.paused = !scrController.instance.paused;
+                scrController.instance.audioPaused = scrController.instance.paused;
+                Time.timeScale = (scrController.instance.paused ? 0f : 1f);
+            }
+
+            /*if ( Input.GetKeyDown(KeyCode.Keypad3) )
+            {
+                speedEnabled = !speedEnabled;
+            }
+
+            if (speedEnabled )
+            {
+                scrController.instance.speed = speed;
+            }*/
 
         }
 
@@ -93,6 +112,13 @@ namespace ADOFAI_AP
             }
             client.ReportLocation(locationName);
             Data_AP.LocationsChecked[locationName] = true;
+        }
+
+        public static void TogglePause()
+        {
+            scrController.instance.paused = !scrController.instance.paused;
+            //scrController.instance.audioPaused = scrController.instance.paused;
+            Time.timeScale = (scrController.instance.paused ? 0f : 1f);
         }
 
     }

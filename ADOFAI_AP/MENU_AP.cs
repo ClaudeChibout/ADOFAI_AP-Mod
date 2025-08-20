@@ -63,6 +63,7 @@ namespace ADOFAI_AP
                     currentMenu = MenuState.Main;
                 else if (currentMenu == MenuState.Main)
                     currentMenu = MenuState.None;
+                ADOFAI_AP.TogglePause();
             }
         }
 
@@ -82,6 +83,16 @@ namespace ADOFAI_AP
                 default:
                     break;
             }
+
+            DrawDebugMenu();
+
+        }
+
+        void DrawDebugMenu()
+        {
+            GUILayout.BeginArea(new Rect(200, 200, 200, 200));
+            //GUILayout.Label($"speedEnabled: {ADOFAI_AP.Instance?.speedEnabled} ({ADOFAI_AP.Instance.speed}-{scrController.instance?.speed})");
+            GUILayout.EndArea();
         }
 
         void DrawConnectionMenu()
@@ -221,6 +232,7 @@ namespace ADOFAI_AP
             if (GUILayout.Button("Close Menu"))
             {
                 currentMenu = MenuState.None;
+                ADOFAI_AP.TogglePause();
             }
             GUILayout.EndArea();
         }
