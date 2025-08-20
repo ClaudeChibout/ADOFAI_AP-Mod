@@ -36,6 +36,10 @@ namespace ADOFAI_AP
         internal string lastItem = "None";
         internal bool showCheckedLocation = false;
 
+        // debug var
+        internal long idLoc = 0;
+        internal string idName = "";
+
         void Awake()
         {   
             if (Instance == null)
@@ -92,6 +96,13 @@ namespace ADOFAI_AP
         {
             GUILayout.BeginArea(new Rect(200, 200, 200, 200));
             //GUILayout.Label($"speedEnabled: {ADOFAI_AP.Instance?.speedEnabled} ({ADOFAI_AP.Instance.speed}-{scrController.instance?.speed})");
+            
+            idName = GUILayout.TextField(idName, GUILayout.Width(100));
+            GUILayout.Label($"{idLoc}");
+            if (GUILayout.Button(idName, GUILayout.Width(100)))
+            {
+                idLoc = (long)ADOFAI_AP.Instance.client?.session.Locations.GetLocationIdFromName(ADOFAI_AP.Instance.client?.session.ConnectionInfo.Game, idName);
+            }
             GUILayout.EndArea();
         }
 
