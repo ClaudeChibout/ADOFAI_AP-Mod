@@ -71,7 +71,8 @@ namespace ADOFAI_AP.Patches
         {
             ADOFAI_AP.Instance.mls.LogInfo($"LoadLevel called with path: {worldAndLevel}");
             if (Data_AP.ItemsReceived.ContainsKey($"Key_Level_{worldAndLevel}") && !Data_AP.ItemsReceived[$"Key_Level_{worldAndLevel}"])
-            {   
+            {
+                Notification.Instance.CreateNotification($"You don't have the Key_Level_{worldAndLevel}");
                 scrController.instance.QuitToMainMenu();
                 return false;
             }

@@ -63,7 +63,7 @@ namespace ADOFAI_AP
             float y = Screen.height - (Screen.height / yDivisor) * (notificationCount - firstNotification);
             float width = Screen.width / xDivisor;
             float height = ( Screen.height / yDivisor) * (notificationCount - firstNotification);
-            if ((notificationCount - firstNotification) > 0) GUI.Box(new Rect(x, y, width, height), "Notification");
+            if ((notificationCount - firstNotification) > 0) GUI.Box(new Rect(x, y, width, height), $"Notification ({(notificationCount - firstNotification)})");
             for (int i = firstNotification; i < notificationCount; i++)
             {   
                 // Get the notification text from the dictionary
@@ -75,7 +75,7 @@ namespace ADOFAI_AP
 
         }
 
-        void CreateNotification(string NotificationText)
+        public void CreateNotification(string NotificationText)
         {
             // Create a new notification with the given text
             var id = notificationCount++;

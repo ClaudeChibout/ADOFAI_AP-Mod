@@ -37,6 +37,8 @@ namespace ADOFAI_AP
 
             if (isConnected.Successful)
             {
+                ADOFAI_AP.Instance.mls.LogInfo($"Connected to Archipelago server at {addr}:{port} as {slot}.");
+                Notification.Instance.CreateNotification($"Connected to Archipelago server at {addr}:{port} as {slot}.");
                 ADOFAI_AP.Instance.Menu.isConnected = true;
                 ADOFAI_AP.Instance.Menu.currentMenu = MENU_AP.MenuState.Main;
                 // Initialize the mod data
@@ -49,7 +51,7 @@ namespace ADOFAI_AP
                 ADOFAI_AP.Instance.mls.LogInfo($"Connected to Archipelago server at {addr}:{port} as {slot}.");
                 session.Items.ItemReceived += (helper) =>
                 {   
-                    if (ADOFAI_AP.Instance.Menu.lastItem == "None")
+                    if (ADOFAI_AP.Instance.Menu.lastItem == "None" )
                     {
                         foreach (var item in helper.AllItemsReceived)
                         {
@@ -59,6 +61,7 @@ namespace ADOFAI_AP
                     }
                     
                     var lastItem = helper.AllItemsReceived[helper.Index - 1];
+                    Notification.Instance.CreateNotification($"You received: {lastItem.ItemName} from {lastItem.Player} !");
                     ADOFAI_AP.Instance.mls.LogInfo($"Received item: {lastItem.ItemName} (ID: {lastItem.ItemId})");
                     ADOFAI_AP.Instance.ReceiveItem(lastItem.ItemName);
                 };
@@ -68,6 +71,7 @@ namespace ADOFAI_AP
                 DL.OnDeathLinkReceived += (deathLink) =>
                 {
                     ADOFAI_AP.Instance.mls.LogInfo($"DeathLink received: {deathLink.Source} died at {deathLink.Cause}");
+                    Notification.Instance.CreateNotification($"{deathLink.Source} has died ! {deathLink.Cause}");
 
                     // fake a death to the planetary system
                     // to not send another Death in the world
@@ -99,10 +103,13 @@ namespace ADOFAI_AP
                     });
                 };
 
+
+
             }
             else
             {
                 ADOFAI_AP.Instance.mls.LogError($"Failed to connect to Archipelago server");
+                Notification.Instance.CreateNotification("Failed to connect to Archipelago server");
                 ADOFAI_AP.Instance.Menu.currentMenu = MENU_AP.MenuState.Connection;
             }
         }
@@ -116,6 +123,7 @@ namespace ADOFAI_AP
         {
             var id = session.Locations.GetLocationIdFromName(session.ConnectionInfo.Game, name);
             session.Locations.CompleteLocationChecks(id);
+            Notification.Instance.CreateNotification($"You succeeded: {name} !");
         }
 
     }
