@@ -64,6 +64,11 @@ namespace ADOFAI_AP
             menuObject.AddComponent<MENU_AP>();
             Menu = menuObject.GetComponent<MENU_AP>();
 
+            var notifObject = new GameObject("ADOFAI_AP_Notification");
+            UnityEngine.Object.DontDestroyOnLoad(notifObject);
+            notifObject.hideFlags = HideFlags.HideAndDontSave;
+            notifObject.AddComponent<Notification>();
+
             client = new CLIENT_AP();
 
         }
