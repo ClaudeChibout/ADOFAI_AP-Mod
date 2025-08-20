@@ -41,24 +41,32 @@ namespace ADOFAI_AP
                 Notification.Instance.CreateNotification($"Connected to Archipelago server at {addr}:{port} as {slot}.");
                 ADOFAI_AP.Instance.Menu.isConnected = true;
                 ADOFAI_AP.Instance.Menu.currentMenu = MENU_AP.MenuState.Main;
+                ADOFAI_AP.TogglePause();
+
+                ADOFAI_AP.Instance.mls.LogInfo("SlotData:");
+                var slotData = session.DataStorage.GetSlotData();
+                foreach (KeyValuePair<string, object> opt in slotData)
+                {
+                    ADOFAI_AP.Instance.mls.LogInfo($"{opt.Key}: {opt.Value}");
+                }
+
+
                 // Initialize the mod data
                 foreach (long levelId in session.Locations.AllLocationsChecked)
-                {
+                {   
                     var LevelName = session.Locations.GetLocationNameFromId(levelId, session.ConnectionInfo.Game);
+                    ADOFAI_AP.Instance.mls.LogInfo($"LevelName: {LevelName}");
                     Data_AP.LocationsChecked[LevelName] = true;
+                }
+
+                foreach (var item in session.Items.AllItemsReceived)
+                {
+                    ADOFAI_AP.Instance.ReceiveItem(item.ItemName);
                 }
 
                 ADOFAI_AP.Instance.mls.LogInfo($"Connected to Archipelago server at {addr}:{port} as {slot}.");
                 session.Items.ItemReceived += (helper) =>
                 {   
-                    if (ADOFAI_AP.Instance.Menu.lastItem == "None" )
-                    {
-                        foreach (var item in helper.AllItemsReceived)
-                        {
-                            ADOFAI_AP.Instance.Menu.lastItem = item.ItemName;
-                            ADOFAI_AP.Instance.ReceiveItem(ADOFAI_AP.Instance.Menu.lastItem);
-                        }
-                    }
                     
                     var lastItem = helper.AllItemsReceived[helper.Index - 1];
                     Notification.Instance.CreateNotification($"You received: {lastItem.ItemName} from {lastItem.Player} !");
@@ -67,41 +75,44 @@ namespace ADOFAI_AP
                 };
 
                 // Handle death link
-                DL = DeathLinkProvider.CreateDeathLinkService(session);
-                DL.OnDeathLinkReceived += (deathLink) =>
+                if ((bool)slotData["death_link"])
                 {
-                    ADOFAI_AP.Instance.mls.LogInfo($"DeathLink received: {deathLink.Source} died at {deathLink.Cause}");
-                    Notification.Instance.CreateNotification($"{deathLink.Source} has died ! {deathLink.Cause}");
+                    DL = DeathLinkProvider.CreateDeathLinkService(session);
+                    DL.OnDeathLinkReceived += (deathLink) =>
+                    {
+                        ADOFAI_AP.Instance.mls.LogInfo($"DeathLink received: {deathLink.Source} died at {deathLink.Cause}");
+                        Notification.Instance.CreateNotification($"{deathLink.Source} has died ! {deathLink.Cause}");
 
-                    // fake a death to the planetary system
-                    // to not send another Death in the world
-                    scrFlash.Flash(new UnityEngine.Color?(UnityEngine.Color.white.WithAlpha(0.3f)), -1f);
-                    SfxSound sfxSound = (ADOBase.controller.endLevelInfo.newBestType == NewBestType.Jingle) ? SfxSound.PlanetExplosionHighscore : SfxSound.PlanetExplosion;
-                    if (GCS.playDeathSound)
-                    {
-                        scrSfx.instance.PlaySfx(sfxSound, MixerGroup.SfxParent, 0.5f, 1f, 0f);
-                    }
-                    if (GCS.playWilhelm)
-                    {
-                        scrSfx.instance.PlaySfx(SfxSound.Wilhelm, MixerGroup.SfxParent, 0.6f, 1f, 0f);
-                    }
+                        // fake a death to the planetary system
+                        // to not send another Death in the world
+                        scrFlash.Flash(new UnityEngine.Color?(UnityEngine.Color.white.WithAlpha(0.3f)), -1f);
+                        SfxSound sfxSound = (ADOBase.controller.endLevelInfo.newBestType == NewBestType.Jingle) ? SfxSound.PlanetExplosionHighscore : SfxSound.PlanetExplosion;
+                        if (GCS.playDeathSound)
+                        {
+                            scrSfx.instance.PlaySfx(sfxSound, MixerGroup.SfxParent, 0.5f, 1f, 0f);
+                        }
+                        if (GCS.playWilhelm)
+                        {
+                            scrSfx.instance.PlaySfx(SfxSound.Wilhelm, MixerGroup.SfxParent, 0.6f, 1f, 0f);
+                        }
 
-                    for (int i = 0; i < scrController.instance.planetarySystem.planetList.Count; i++)
-                    {
-                        scrController.instance.planetarySystem.planetList[i].planetRenderer.Explode(1f);
-                    }
-                    Task.Delay(500).ContinueWith(_ =>
-                    {
-                        scrController.instance.paused = !scrController.instance.paused;
-                        scrController.instance.audioPaused = scrController.instance.paused;
-                        Time.timeScale = (scrController.instance.paused ? 0f : 1f);
-                    });
+                        for (int i = 0; i < scrController.instance.planetarySystem.planetList.Count; i++)
+                        {
+                            scrController.instance.planetarySystem.planetList[i].planetRenderer.Explode(1f);
+                        }
+                        Task.Delay(500).ContinueWith(_ =>
+                        {
+                            scrController.instance.paused = !scrController.instance.paused;
+                            scrController.instance.audioPaused = scrController.instance.paused;
+                            Time.timeScale = (scrController.instance.paused ? 0f : 1f);
+                        });
 
-                    Task.Delay(1000).ContinueWith(_ =>
-                    {
-                        scrController.instance.Restart(true);
-                    });
-                };
+                        Task.Delay(1000).ContinueWith(_ =>
+                        {
+                            scrController.instance.Restart(true);
+                        });
+                    };
+                }
 
 
 
