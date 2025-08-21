@@ -45,6 +45,7 @@ namespace ADOFAI_AP
 
                 ADOFAI_AP.Instance.mls.LogInfo("SlotData:");
                 var slotData = session.DataStorage.GetSlotData();
+
                 foreach (KeyValuePair<string, object> opt in slotData)
                 {
                     ADOFAI_AP.Instance.mls.LogInfo($"{opt.Key}: {opt.Value}");

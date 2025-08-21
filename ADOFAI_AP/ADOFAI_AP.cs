@@ -1,5 +1,6 @@
 ﻿using ADOFAI_AP.Patches;
 using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using System;
@@ -31,6 +32,10 @@ namespace ADOFAI_AP
 
         internal MENU_AP Menu;
 
+        internal ConfigEntry<string> pseudo;
+        internal ConfigEntry<string> serverIP;
+        internal ConfigEntry<string> serverPort;
+
         internal CLIENT_AP client = null;
 
         //internal bool speedEnabled = false;
@@ -52,14 +57,25 @@ namespace ADOFAI_AP
             }
 
 
+            // Config
+
+            pseudo = Config.Bind("ConnectionForm", "pseudo", "Shotal", "Pseudo for ConnectionForm");
+            serverIP = Config.Bind("ConnectionForm", "IP", "localhost", "IP for ConnectionForm");
+            serverPort = Config.Bind("ConnectionForm", "Port", "38281", "Port for ConnectionForm");
+
+            // Log
+
             mls = BepInEx.Logging.Logger.CreateLogSource(modGUID);
             mls.LogInfo($"Plugin {modName} is starting...");
 
-            
+            // Patch
+
             harmony.PatchAll(typeof(ADOFAI_AP));
             harmony.PatchAll(typeof(ScrControllerPatch));
             harmony.PatchAll(typeof(PlanetarySystemPatch));
             mls.LogInfo($"Plugin {modName} is loaded!");
+
+            // Menu
 
             var menuObject = new GameObject("ADOFAI_AP_Menu");
             UnityEngine.Object.DontDestroyOnLoad(menuObject);
@@ -67,10 +83,14 @@ namespace ADOFAI_AP
             menuObject.AddComponent<MENU_AP>();
             Menu = menuObject.GetComponent<MENU_AP>();
 
+            // Notif
+
             var notifObject = new GameObject("ADOFAI_AP_Notification");
             UnityEngine.Object.DontDestroyOnLoad(notifObject);
             notifObject.hideFlags = HideFlags.HideAndDontSave;
             notifObject.AddComponent<Notification>();
+
+            // Client
 
             client = new CLIENT_AP();
 
@@ -78,12 +98,12 @@ namespace ADOFAI_AP
 
         void Update()
         {
-            if ( Input.GetKeyDown(KeyCode.Keypad2) )
+            /*if ( Input.GetKeyDown(KeyCode.Keypad2) )
             {
                 scrController.instance.paused = !scrController.instance.paused;
                 scrController.instance.audioPaused = scrController.instance.paused;
                 Time.timeScale = (scrController.instance.paused ? 0f : 1f);
-            }
+            }*/
 
             /*if ( Input.GetKeyDown(KeyCode.Keypad3) )
             {
