@@ -19,7 +19,7 @@ namespace ADOFAI_AP
     internal class CLIENT_AP
     {
 
-        internal ArchipelagoSession session;
+        internal ArchipelagoSession session = null;
 
         public DeathLinkService DL = null;
 
@@ -41,7 +41,7 @@ namespace ADOFAI_AP
                 Notification.Instance.CreateNotification($"Connected to Archipelago server at {addr}:{port} as {slot}.");
                 ADOFAI_AP.Instance.Menu.isConnected = true;
                 ADOFAI_AP.Instance.Menu.currentMenu = MENU_AP.MenuState.Main;
-                ADOFAI_AP.TogglePause();
+                ADOFAI_AP.TogglePause(true);
 
                 ADOFAI_AP.Instance.mls.LogInfo("SlotData:");
                 var slotData = session.DataStorage.GetSlotData();
@@ -108,18 +108,12 @@ namespace ADOFAI_AP
                     LoadWorlds("neon_cosmos_worlds_ex_tuto", Data_AP.NeonCosmosWorldsEXTuto, Data_AP.NeonCosmosWorldsEXTutoKeys);
                 }
 
-                ADOFAI_AP.Instance.mls.LogInfo($"LOCATIONCHECKED:");
-                foreach (var k in Data_AP.LocationsChecked)
-                {
-                    ADOFAI_AP.Instance.mls.LogInfo($"{k.Key}:{k.Value}");
-                }
-
 
                 // Initialize the mod data
                 foreach (long levelId in session.Locations.AllLocationsChecked)
                 {   
                     var LevelName = session.Locations.GetLocationNameFromId(levelId, session.ConnectionInfo.Game);
-                    ADOFAI_AP.Instance.mls.LogInfo($"LevelName: {LevelName}");
+                    //ADOFAI_AP.Instance.mls.LogInfo($"LevelName: {LevelName}");
                     Data_AP.LocationsChecked[LevelName] = true;
                 }
 
@@ -183,6 +177,7 @@ namespace ADOFAI_AP
             }
             else
             {
+                session = null;
                 ADOFAI_AP.Instance.mls.LogError($"Failed to connect to Archipelago server");
                 Notification.Instance.CreateNotification("Failed to connect to Archipelago server");
                 ADOFAI_AP.Instance.Menu.currentMenu = MENU_AP.MenuState.Connection;
@@ -213,6 +208,13 @@ namespace ADOFAI_AP
                 Data_AP.ItemsReceived[kvp.Key] = kvp.Value;
             }
             ADOFAI_AP.Instance.mls.LogInfo($"{worldsOptionName} loaded");
+        }
+
+        public async Task Disconnect()
+        {
+            await session.Socket.DisconnectAsync();
+            session = null;
+            DL = null;
         }
 
     }

@@ -134,9 +134,9 @@ namespace ADOFAI_AP
             Data_AP.LocationsChecked[locationName] = true;
         }
 
-        public static void TogglePause()
+        public static void TogglePause(bool paused)
         {
-            scrController.instance.paused = !scrController.instance.paused;
+            scrController.instance.paused = paused;
             //scrController.instance.audioPaused = scrController.instance.paused;
             Time.timeScale = (scrController.instance.paused ? 0f : 1f);
         }

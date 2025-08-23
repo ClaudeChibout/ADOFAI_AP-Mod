@@ -15,7 +15,6 @@ namespace ADOFAI_AP
     {
 
         public static MENU_AP Instance = null;
-        internal bool isMenuOpen = false;
         internal bool isConnected = false; // This should be set to true when the connection is established
         //private bool toggleFloor = false;
 
@@ -64,11 +63,15 @@ namespace ADOFAI_AP
             // Check for a key press to toggle the menu
             if (Input.GetKeyDown(KeyCode.M))
             {
-                if (currentMenu == MenuState.None && isConnected)
-                    currentMenu = MenuState.Main;
-                else if (currentMenu == MenuState.Main)
+                if (currentMenu == MenuState.None)
+                {
+                    currentMenu = isConnected ? MenuState.Main : MenuState.Connection;
+                    ADOFAI_AP.TogglePause(true);
+                }
+                else {
                     currentMenu = MenuState.None;
-                ADOFAI_AP.TogglePause();
+                    ADOFAI_AP.TogglePause(false);
+                }
             }
         }
 
@@ -259,20 +262,20 @@ namespace ADOFAI_AP
                 currentMenu = MenuState.Selection; // Switch to connection menu
             }
 
+            if (GUILayout.Button("Disconnect"))
+            {
+                ADOFAI_AP.Instance.client.Disconnect(); // Disconnect the user to the AP server
+                isConnected = false;
+                currentMenu = MenuState.Connection;
+            }
+
             if (GUILayout.Button("Close Menu"))
             {
                 currentMenu = MenuState.None;
-                ADOFAI_AP.TogglePause();
+                ADOFAI_AP.TogglePause(false);
             }
             GUILayout.EndArea();
         }
         
-
-        public void ToggleMenu()
-        {
-            isMenuOpen = !isMenuOpen;
-            //ADOFAI_AP.Instance.mls.LogInfo($"Menu is now {(isMenuOpen ? "open" : "closed")}.");
-        }
-
     }
 }

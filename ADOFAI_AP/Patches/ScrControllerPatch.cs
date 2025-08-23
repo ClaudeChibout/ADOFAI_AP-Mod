@@ -13,8 +13,12 @@ namespace ADOFAI_AP.Patches
         [HarmonyPatch("PortalTravelAction")]
         [HarmonyPrefix]
         static bool PatchPortalTravelAction(ref Portal ___portalDestination, ref String ___portalArguments)
-        {   
-            ADOFAI_AP.Instance.mls.LogInfo($"PortalTravelAction called: {___portalDestination}\nargs: {___portalArguments}");
+        {
+            if (ADOFAI_AP.Instance.client.session == null)
+            {
+                return true;
+            }
+                ADOFAI_AP.Instance.mls.LogInfo($"PortalTravelAction called: {___portalDestination}\nargs: {___portalArguments}");
             if (___portalDestination == Portal.EndOfLevel)
             {   
                 ADOFAI_AP.Instance.mls.LogInfo($"LevelComplete: {scrController.currentLevel} !");
@@ -69,6 +73,10 @@ namespace ADOFAI_AP.Patches
         [HarmonyPrefix]
         static bool EnterLevel(string worldAndLevel)
         {
+            if (ADOFAI_AP.Instance.client.session == null)
+            {
+                return true;
+            }
             ADOFAI_AP.Instance.mls.LogInfo($"LoadLevel called with path: {worldAndLevel}");
             if (Data_AP.ItemsReceived.ContainsKey($"Key_Level_{worldAndLevel}") && !Data_AP.ItemsReceived[$"Key_Level_{worldAndLevel}"])
             {

@@ -14,10 +14,13 @@ namespace ADOFAI_AP.Patches
         [HarmonyPatch("Die")]
         [HarmonyPrefix]
         static bool PatchDie()
-        {
-            ADOFAI_AP.Instance.client?.DL?.SendDeathLink(new DeathLink(ADOFAI_AP.Instance.Menu.pseudo, null));
-            Notification.Instance.CreateNotification($"You are dead! (not alone)");
-            //Notification.Instance.CreateNotification($"");
+        {   
+            if (ADOFAI_AP.Instance.client.session != null)
+            {
+                ADOFAI_AP.Instance.client?.DL?.SendDeathLink(new DeathLink(ADOFAI_AP.Instance.Menu.pseudo, null));
+                Notification.Instance.CreateNotification($"You're dead, and your friends too !");
+                //Notification.Instance.CreateNotification($"");
+            }
             return true; // Continue with the original method
         }
     }
