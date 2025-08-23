@@ -52,51 +52,28 @@ namespace ADOFAI_AP
                 }
 
                 //Load base Levels
-                foreach (var kvp in Data_AP.MainWorlds)
-                {
-                    Data_AP.LocationsChecked[kvp.Key] = kvp.Value;
-                }
-                foreach (var kvp in Data_AP.MainWorldsKeys)
-                {
-                    Data_AP.ItemsReceived[kvp.Key] = kvp.Value;
-                }
+                LoadWorlds("main_worlds", Data_AP.MainWorlds, Data_AP.MainWorldsKeys);
+
                 // Load the levels specified in the YAML
                 if ((bool)slotData["main_worlds_tuto"])
                 {
-                    foreach (var kvp in Data_AP.MainWorldsTuto)
-                    {
-                        Data_AP.LocationsChecked[kvp.Key] = kvp.Value;
-                    }
-                    foreach (var kvp in Data_AP.MainWorldsTutoKeys)
-                    {
-                        Data_AP.ItemsReceived[kvp.Key] = kvp.Value;
-                    }
-                    ADOFAI_AP.Instance.mls.LogInfo($"main_worlds_tuto loaded");
+                    LoadWorlds("main_worlds_tuto", Data_AP.MainWorldsTuto, Data_AP.MainWorldsTutoKeys);
                 }
                 if ((bool)slotData["xtra_worlds"])
                 {
-                    foreach (var kvp in Data_AP.XtraWorlds)
-                    {
-                        Data_AP.LocationsChecked[kvp.Key] = kvp.Value;
-                    }
-                    foreach (var kvp in Data_AP.XtraWorldsKeys)
-                    {
-                        Data_AP.ItemsReceived[kvp.Key] = kvp.Value;
-                    }
-                    ADOFAI_AP.Instance.mls.LogInfo($"xtra_worlds loaded");
+                    LoadWorlds("xtra_worlds", Data_AP.XtraWorlds, Data_AP.XtraWorldsKeys);
                 }
                 if ((bool)slotData["xtra_worlds_tuto"])
                 {
-                    foreach (var kvp in Data_AP.XtraTuto)
-                    {
-                        Data_AP.LocationsChecked[kvp.Key] = kvp.Value;
-                    }
-                    foreach (var kvp in Data_AP.XtraTutoKeys)
-                    {
-                        Data_AP.ItemsReceived[kvp.Key] = kvp.Value;
-                    }
-                    ADOFAI_AP.Instance.mls.LogInfo($"xtra_worlds_tuto loaded");
-
+                    LoadWorlds("xtra_worlds_tuto", Data_AP.XtraTuto, Data_AP.XtraTutoKeys);
+                }
+                if ((bool)slotData["b_world"])
+                {
+                    LoadWorlds("b_world", Data_AP.BWorld, Data_AP.BWorldKeys);
+                }
+                if ((bool)slotData["b_world_tuto"])
+                {
+                    LoadWorlds("b_world_tuto", Data_AP.BWorldTuto, Data_AP.BWorldTutoKeys);
                 }
 
                 ADOFAI_AP.Instance.mls.LogInfo($"LOCATIONCHECKED:");
@@ -191,6 +168,19 @@ namespace ADOFAI_AP
             session.Locations.CompleteLocationChecks(id);
             ADOFAI_AP.Instance.mls.LogInfo($"id:{id} submited ");
             Notification.Instance.CreateNotification($"You succeeded: {name} !");
+        }
+
+        public void LoadWorlds(string worldsOptionName, Dictionary<string, bool> worldsNames, Dictionary<string, bool> worldsKeys)
+        {   
+            foreach (var kvp in worldsNames)
+            {
+                Data_AP.LocationsChecked[kvp.Key] = kvp.Value;
+            }
+            foreach (var kvp in worldsKeys)
+            {
+                Data_AP.ItemsReceived[kvp.Key] = kvp.Value;
+            }
+            ADOFAI_AP.Instance.mls.LogInfo($"{worldsOptionName} loaded");
         }
 
     }

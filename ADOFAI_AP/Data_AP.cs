@@ -350,5 +350,21 @@ namespace ADOFAI_AP.Patches
             {"Key_Level_XM-4", false}
         };
 
+        public static Dictionary<string, bool> BWorld = new Dictionary<string, bool> {
+            {"B-X", false},
+        };
+
+        public static Dictionary<string, bool> BWorldKeys = new Dictionary<string, bool> {
+            {"Key_Level_B-X", false},
+        };
+
+        public static Dictionary<string, bool> BWorldTuto = new Dictionary<string, bool> {
+            {"B-1", false},
+        };
+
+        public static Dictionary<string, bool> BWorldTutoKeys = new Dictionary<string, bool> {
+            {"Key_Level_B-1", false},
+        };
+
     }
 }
