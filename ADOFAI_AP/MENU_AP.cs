@@ -39,6 +39,7 @@ namespace ADOFAI_AP
         // debug var
         internal long idLoc = 0;
         internal string idName = "";
+        internal string lvlName = string.Empty;
 
         void Awake()
         {   
@@ -97,12 +98,25 @@ namespace ADOFAI_AP
             GUILayout.BeginArea(new Rect(200, 200, 200, 200));
             //GUILayout.Label($"speedEnabled: {ADOFAI_AP.Instance?.speedEnabled} ({ADOFAI_AP.Instance.speed}-{scrController.instance?.speed})");
             
+
+            // AP WORLD IDs
+            GUILayout.BeginHorizontal();
             idName = GUILayout.TextField(idName, GUILayout.Width(100));
-            GUILayout.Label($"{idLoc}");
-            if (GUILayout.Button(idName, GUILayout.Width(100)))
+            if (GUILayout.Button("idApWorld", GUILayout.Width(100)))
             {
                 idLoc = (long)ADOFAI_AP.Instance.client?.session.Locations.GetLocationIdFromName(ADOFAI_AP.Instance.client?.session.ConnectionInfo.Game, idName);
             }
+            GUILayout.Label($"{idLoc}");
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            lvlName = GUILayout.TextField(lvlName, GUILayout.Width(100));
+            if (GUILayout.Button("EnterLevel", GUILayout.Width(100)))
+            {
+                scrController.instance?.EnterLevel(lvlName);
+            }
+            GUILayout.EndHorizontal();
+
             GUILayout.EndArea();
         }
 
