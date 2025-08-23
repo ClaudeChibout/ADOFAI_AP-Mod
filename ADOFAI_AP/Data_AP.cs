@@ -366,5 +366,270 @@ namespace ADOFAI_AP.Patches
             {"Key_Level_B-1", false},
         };
 
+        public static Dictionary<string, bool> CrownWorlds = new Dictionary<string, bool>
+        {
+            {"XO-X", false},
+            {"XT-X", false},
+            {"XI-X", false}
+        };
+
+        public static Dictionary<string, bool> CrownWorldsKeys = new Dictionary<string, bool>
+        {
+            {"Key_Level_XO-X", false},
+            {"Key_Level_XT-X", false},
+            {"Key_Level_XI-X", false}
+        };
+
+        public static Dictionary<string, bool> CrownWorldsTuto = new Dictionary<string, bool>
+        {
+            {"XO-1", false},
+            {"XO-2", false},
+
+            {"XT-1", false},
+            {"XT-2", false},
+            {"XT-3", false},
+            {"XT-4", false},
+            {"XT-5", false},
+            {"XT-6", false},
+            {"XT-7", false},
+            {"XT-8", false},
+
+            {"XI-1", false},
+            {"XI-2", false},
+            {"XI-3", false},
+            {"XI-4", false},
+            {"XI-5", false},
+            {"XI-6", false},
+            {"XI-7", false}
+        };
+
+        public static Dictionary<string, bool> CrownWorldsTutoKeys = new Dictionary<string, bool>
+        {
+            {"Key_Level_XO-1", false},
+            {"Key_Level_XO-2", false},
+        
+            {"Key_Level_XT-1", false},
+            {"Key_Level_XT-2", false},
+            {"Key_Level_XT-3", false},
+            {"Key_Level_XT-4", false},
+            {"Key_Level_XT-5", false},
+            {"Key_Level_XT-6", false},
+            {"Key_Level_XT-7", false},
+            {"Key_Level_XT-8", false},
+        
+            {"Key_Level_XI-1", false},
+            {"Key_Level_XI-2", false},
+            {"Key_Level_XI-3", false},
+            {"Key_Level_XI-4", false},
+            {"Key_Level_XI-5", false},
+            {"Key_Level_XI-6", false},
+            {"Key_Level_XI-7", false}
+        };
+
+        public static Dictionary<string, bool> StarWorlds = new Dictionary<string, bool>
+        {
+            {"MN-X", false},
+            {"ML-X", false},
+            {"MO-X", false}
+        };
+
+        public static Dictionary<string, bool> StarWorldsKeys = new Dictionary<string, bool>
+        {
+            {"Key_Level_MN-X", false},
+            {"Key_Level_ML-X", false},
+            {"Key_Level_MO-X", false}
+        };
+
+        public static Dictionary<string, bool> StarWorldsTuto = new Dictionary<string, bool>
+        {
+            {"MN-1", false},
+            {"MN-2", false},
+            {"MN-3", false},
+            {"MN-4", false},
+
+            {"ML-1", false},
+            {"ML-2", false},
+            {"ML-3", false},
+            {"ML-4", false},
+            {"ML-5", false},
+            {"ML-6", false},
+            {"ML-7", false},
+
+            {"MO-1", false},
+            {"MO-2", false},
+            {"MO-3", false}
+        };
+
+        public static Dictionary<string, bool> StarWorldsTutoKeys = new Dictionary<string, bool>
+        {
+            {"Key_Level_MN-1", false},
+            {"Key_Level_MN-2", false},
+            {"Key_Level_MN-3", false},
+            {"Key_Level_MN-4", false},
+
+            {"Key_Level_ML-1", false},
+            {"Key_Level_ML-2", false},
+            {"Key_Level_ML-3", false},
+            {"Key_Level_ML-4", false},
+            {"Key_Level_ML-5", false},
+            {"Key_Level_ML-6", false},
+            {"Key_Level_ML-7", false},
+
+            {"Key_Level_MO-1", false},
+            {"Key_Level_MO-2", false},
+            {"Key_Level_MO-3", false}
+        };
+
+        public static Dictionary<string, bool> NeonCosmosWorlds = new Dictionary<string, bool>
+        {
+            {"T1-X", false},
+            {"T2-X", false},
+            {"T3-X", false},
+            {"T4-X", false},
+            {"T5-X", false}
+        };
+
+        public static Dictionary<string, bool> NeonCosmosWorldsKeys = new Dictionary<string, bool>
+        {
+            {"Key_Level_T1-X", false},
+            {"Key_Level_T2-X", false},
+            {"Key_Level_T3-X", false},
+            {"Key_Level_T4-X", false},
+            {"Key_Level_T5-X", false}
+        };
+
+        public static Dictionary<string, bool> NeonCosmosWorldsTuto = new Dictionary<string, bool>
+        {
+            {"T1-1", false},
+            {"T1-2", false},
+            {"T1-3", false},
+            {"T1-4", false},
+
+            {"T2-1", false},
+            {"T2-2", false},
+            {"T2-3", false},
+            {"T2-4", false},
+            {"T2-5", false},
+            {"T2-6", false},
+            {"T2-7", false},
+            {"T2-8", false},
+            {"T2-9", false},
+
+            {"T3-1", false},
+
+            {"T4-1", false},
+            {"T4-2", false},
+            {"T4-3", false},
+            {"T4-4", false},
+            {"T4-5", false},
+            {"T4-6", false},
+            {"T4-7", false},
+            {"T4-8", false},
+            {"T4-9", false},
+            {"T4-10", false},
+            {"T4-11", false},
+            {"T4-12", false},
+
+            {"T5-1", false},
+            {"T5-2", false},
+            {"T5-3", false},
+            {"T5-4", false},
+            {"T5-5", false}
+        };
+
+        public static Dictionary<string, bool> NeonCosmosWorldsTutoKeys = new Dictionary<string, bool>
+        {
+            {"Key_Level_T1-1", false},
+            {"Key_Level_T1-2", false},
+            {"Key_Level_T1-3", false},
+            {"Key_Level_T1-4", false},
+
+            {"Key_Level_T2-1", false},
+            {"Key_Level_T2-2", false},
+            {"Key_Level_T2-3", false},
+            {"Key_Level_T2-4", false},
+            {"Key_Level_T2-5", false},
+            {"Key_Level_T2-6", false},
+            {"Key_Level_T2-7", false},
+            {"Key_Level_T2-8", false},
+            {"Key_Level_T2-9", false},
+
+            {"Key_Level_T3-1", false},
+
+            {"Key_Level_T4-1", false},
+            {"Key_Level_T4-2", false},
+            {"Key_Level_T4-3", false},
+            {"Key_Level_T4-4", false},
+            {"Key_Level_T4-5", false},
+            {"Key_Level_T4-6", false},
+            {"Key_Level_T4-7", false},
+            {"Key_Level_T4-8", false},
+            {"Key_Level_T4-9", false},
+            {"Key_Level_T4-10", false},
+            {"Key_Level_T4-11", false},
+            {"Key_Level_T4-12", false},
+
+            {"Key_Level_T5-1", false},
+            {"Key_Level_T5-2", false},
+            {"Key_Level_T5-3", false},
+            {"Key_Level_T5-4", false},
+            {"Key_Level_T5-5", false}
+        };
+
+        public static Dictionary<string, bool> NeonCosmosWorldsEX = new Dictionary<string, bool>
+        {
+            {"T1EX-X", false},
+            {"T2EX-X", false},
+            {"T3EX-X", false},
+            {"T4EX-X", false}
+        };
+
+        public static Dictionary<string, bool> NeonCosmosWorldsEXKeys = new Dictionary<string, bool>
+        {
+            {"Key_Level_T1EX-X", false},
+            {"Key_Level_T2EX-X", false},
+            {"Key_Level_T3EX-X", false},
+            {"Key_Level_T4EX-X", false}
+        };
+
+        public static Dictionary<string, bool> NeonCosmosWorldsEXTuto = new Dictionary<string, bool>
+        {
+            {"T1EX-1", false},
+            {"T1EX-2", false},
+            {"T1EX-3", false},
+            {"T1EX-4", false},
+
+            {"T2EX-1", false},
+            {"T2EX-2", false},
+            {"T2EX-3", false},
+            {"T2EX-4", false},
+
+            {"T4EX-1", false},
+            {"T4EX-2", false},
+            {"T4EX-3", false},
+            {"T4EX-4", false}
+        };
+
+        public static Dictionary<string, bool> NeonCosmosWorldsEXTutoKeys = new Dictionary<string, bool>
+        {
+            {"Key_Level_T1EX-1", false},
+            {"Key_Level_T1EX-2", false},
+            {"Key_Level_T1EX-3", false},
+            {"Key_Level_T1EX-4", false},
+
+            {"Key_Level_T2EX-1", false},
+            {"Key_Level_T2EX-2", false},
+            {"Key_Level_T2EX-3", false},
+            {"Key_Level_T2EX-4", false},
+
+            {"Key_Level_T4EX-1", false},
+            {"Key_Level_T4EX-2", false},
+            {"Key_Level_T4EX-3", false},
+            {"Key_Level_T4EX-4", false}
+        };
+
+
+
+
     }
 }

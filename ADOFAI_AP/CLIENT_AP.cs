@@ -75,6 +75,38 @@ namespace ADOFAI_AP
                 {
                     LoadWorlds("b_world_tuto", Data_AP.BWorldTuto, Data_AP.BWorldTutoKeys);
                 }
+                if ((bool)slotData["crown_worlds"])
+                {
+                    LoadWorlds("crown_worlds", Data_AP.CrownWorlds, Data_AP.CrownWorldsKeys);
+                }
+                if ((bool)slotData["crown_worlds_tuto"])
+                {
+                    LoadWorlds("crown_worlds_tuto", Data_AP.CrownWorldsTuto, Data_AP.CrownWorldsTutoKeys);
+                }
+                if ((bool)slotData["star_worlds"])
+                {
+                    LoadWorlds("star_worlds", Data_AP.StarWorlds, Data_AP.StarWorldsKeys);
+                }
+                if ((bool)slotData["star_worlds_tuto"])
+                {
+                    LoadWorlds("star_worlds_tuto", Data_AP.StarWorldsTuto, Data_AP.StarWorldsTutoKeys);
+                }
+                if ((bool)slotData["neon_cosmos_worlds"])
+                {
+                    LoadWorlds("neon_cosmos_worlds", Data_AP.NeonCosmosWorlds, Data_AP.NeonCosmosWorldsKeys);
+                }
+                if ((bool)slotData["neon_cosmos_worlds_tuto"])
+                {
+                    LoadWorlds("neon_cosmos_worlds_tuto", Data_AP.NeonCosmosWorldsTuto, Data_AP.NeonCosmosWorldsTutoKeys);
+                }
+                if ((bool)slotData["neon_cosmos_worlds_ex"])
+                {
+                    LoadWorlds("neon_cosmos_worlds_ex", Data_AP.NeonCosmosWorldsEX, Data_AP.NeonCosmosWorldsEXKeys);
+                }
+                if ((bool)slotData["neon_cosmos_worlds_ex_tuto"])
+                {
+                    LoadWorlds("neon_cosmos_worlds_ex_tuto", Data_AP.NeonCosmosWorldsEXTuto, Data_AP.NeonCosmosWorldsEXTutoKeys);
+                }
 
                 ADOFAI_AP.Instance.mls.LogInfo($"LOCATIONCHECKED:");
                 foreach (var k in Data_AP.LocationsChecked)
