@@ -71,8 +71,13 @@ namespace ADOFAI_AP
             // Patch
 
             harmony.PatchAll(typeof(ADOFAI_AP));
+            mls.LogInfo("ADOFAI_AP loaded!");
             harmony.PatchAll(typeof(ScrControllerPatch));
+            mls.LogInfo("ScrControllerPatch loaded!");
             harmony.PatchAll(typeof(PlanetarySystemPatch));
+            mls.LogInfo("PlanetarySystemPatch loaded!");
+            harmony.PatchAll(typeof(PauseLevelPatch));
+            mls.LogInfo("PauseMenuPatch loaded!");
             mls.LogInfo($"Plugin {modName} is loaded!");
 
             // Menu

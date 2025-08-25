@@ -83,6 +83,7 @@
     <Compile Include="MENU_AP.cs" />
     <Compile Include="Data_AP.cs" />
     <Compile Include="Notification.cs" />
+    <Compile Include="Patches\PauseLevelPatch.cs" />
     <Compile Include="Patches\PlanetarySystemPatch.cs" />
     <Compile Include="Patches\ScrControllerPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
