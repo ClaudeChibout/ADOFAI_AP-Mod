@@ -36,7 +36,8 @@ namespace ADOFAI_AP
 
 
             if (isConnected.Successful)
-            {   
+            {
+                scrController.instance.QuitToMainMenu();
                 ADOFAI_AP.Instance.mls.LogInfo($"Connected to Archipelago server at {addr}:{port} as {slot}.");
                 Notification.Instance.CreateNotification($"Connected to Archipelago server at {addr}:{port} as {slot}.");
                 ADOFAI_AP.Instance.Menu.isConnected = true;
@@ -215,6 +216,7 @@ namespace ADOFAI_AP
             await session.Socket.DisconnectAsync();
             session = null;
             DL = null;
+            scrController.instance.QuitToMainMenu();
         }
 
     }
