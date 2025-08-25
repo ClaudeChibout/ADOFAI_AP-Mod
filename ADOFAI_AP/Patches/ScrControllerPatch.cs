@@ -77,6 +77,13 @@ namespace ADOFAI_AP.Patches
             {
                 return true;
             }
+
+            if (ADOFAI_AP.Instance.Menu.fromDebugMenu) 
+            {
+                ADOFAI_AP.Instance.Menu.fromDebugMenu = false;
+                return true; 
+            }
+
             ADOFAI_AP.Instance.mls.LogInfo($"LoadLevel called with path: {worldAndLevel}");
             if (Data_AP.ItemsReceived.ContainsKey($"Key_Level_{worldAndLevel}") && !Data_AP.ItemsReceived[$"Key_Level_{worldAndLevel}"])
             {
