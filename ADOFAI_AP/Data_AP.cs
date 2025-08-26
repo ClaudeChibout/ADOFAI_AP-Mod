@@ -8,6 +8,9 @@ namespace ADOFAI_AP.Patches
 {
     internal class Data_AP
     {
+
+        public static List<string> goalLevels = new List<string>();
+
         public static Dictionary<string, bool> ItemsReceived = new Dictionary<string, bool>()
         {
             { "Key_Level_1-X", true },

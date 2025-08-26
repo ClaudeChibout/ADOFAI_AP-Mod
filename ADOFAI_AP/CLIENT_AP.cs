@@ -11,6 +11,7 @@ using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -55,7 +56,12 @@ namespace ADOFAI_AP
                     ADOFAI_AP.Instance.mls.LogInfo($"{opt.Key}: {opt.Value}");
                 }
 
-                //Load base Levels
+                // Load goalLevels
+                foreach (var level in ((string)slotData["goal_levels"]).Split()){
+                    Data_AP.goalLevels.Add(level);
+                }
+
+                // Load base Levels
                 LoadWorlds("main_worlds", Data_AP.MainWorlds, Data_AP.MainWorldsKeys);
 
                 // Load the levels specified in the YAML
@@ -201,6 +207,23 @@ namespace ADOFAI_AP
             Notification.Instance.CreateNotification($"You succeeded: {name} !");
         }
 
+        public void CheckWin()
+        {
+            foreach (var level in Data_AP.goalLevels)
+            {
+                // check if all goalLevels are completed
+                if (!Data_AP.LocationsChecked[level])
+                {
+                    return;
+                }
+
+                // Here clear the victory location
+                // create the location with the victory item and put the victory rule with the victory item
+
+                // var id = session.Locations.GetLocationIdFromName(session.ConnectionInfo.Game, name);
+            }
+        }
+
         public void LoadWorlds(string worldsOptionName, Dictionary<string, bool> worldsNames, Dictionary<string, bool> worldsKeys)
         {   
             foreach (var kvp in worldsNames)
@@ -217,6 +240,7 @@ namespace ADOFAI_AP
         public async Task Disconnect()
         {
             await session.Socket.DisconnectAsync();
+            Data_AP.goalLevels.Clear();
             session = null;
             DL = null;
             scrController.instance.QuitToMainMenu();

@@ -207,15 +207,18 @@ namespace ADOFAI_AP
                             GUI.backgroundColor = UnityEngine.Color.gray;
                         }
                         else
-                        {
-                            GUI.backgroundColor = UnityEngine.Color.green;
+                        {   
+                            GUI.backgroundColor = Data_AP.goalLevels.Contains(levelName) ? UnityEngine.Color.yellow : UnityEngine.Color.green;
                         }
 
                         if (GUILayout.Button(levelName))
-                        {
-                            ADOFAI_AP.Instance.mls.LogInfo($"Selected level: {levelName}");
-                            currentMenu = MenuState.None;
-                            ADOBase.controller.EnterLevel(levelName, false);
+                        {   
+                            if (CanEnterInGoalLevels(levelName))
+                            {
+                                ADOFAI_AP.Instance.mls.LogInfo($"Selected level: {levelName}");
+                                currentMenu = MenuState.None;
+                                ADOBase.controller.EnterLevel(levelName, false);
+                            }
                         }
                     }
                 }
@@ -282,5 +285,35 @@ namespace ADOFAI_AP
             GUILayout.EndArea();
         }
         
+
+        bool CanEnterInGoalLevels(string levelName)
+        {
+            if (!Data_AP.goalLevels.Contains(levelName))
+            {
+                return true;
+            }
+
+            int nb = 0;
+
+            foreach (KeyValuePair<string, bool> kvp in Data_AP.LocationsChecked)
+            {
+                if (kvp.Value && !Data_AP.goalLevels.Contains(kvp.Key)) nb++;
+            }
+            var slotData = ADOFAI_AP.Instance.client.session.DataStorage.GetSlotData();
+            if (int.TryParse(slotData["percentage_goal_completion"]?.ToString(), out int goalPercent))
+            {
+                float completeLevelsNeeded = (float)goalPercent / (float)100;
+                completeLevelsNeeded *= (Data_AP.LocationsChecked.Count() - Data_AP.goalLevels.Count());
+                if (nb < (int)completeLevelsNeeded)
+                {
+                    Notification.Instance.CreateNotification($"You completed {nb} levels, you need to complete {(int)completeLevelsNeeded} levels to Enter Here");
+                    return false;
+                }
+            }
+
+
+            return true;
+        }
+
     }
 }
