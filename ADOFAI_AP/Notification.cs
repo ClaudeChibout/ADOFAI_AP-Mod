@@ -80,6 +80,7 @@ namespace ADOFAI_AP
             // Create a new notification with the given text
             var id = notificationCount++;
             notifications[id] = NotificationText; // Store the notification in the dictionary
+            scrSfx.instance.PlaySfx(SfxSound.AchievementBubbleOpen, MixerGroup.InterfaceParent, .2f, 1f, 0f);
             Task.Delay(5000).ContinueWith(_ => Remove(id)); // Automatically remove the notification after 5 seconds
         }
 
@@ -87,6 +88,7 @@ namespace ADOFAI_AP
         {
             // Remove the notification from the dictionary
             notifications.Remove(id);
+            scrSfx.instance.PlaySfx(SfxSound.AchievementBubbleClose, MixerGroup.InterfaceParent, .2f, 1f, 0f);
             firstNotification++;
         }
 
