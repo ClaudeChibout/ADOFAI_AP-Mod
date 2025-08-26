@@ -122,6 +122,9 @@ namespace ADOFAI_AP
             }
             GUILayout.EndHorizontal();
 
+            GUILayout.Label($"currentSpeedTrial: {GCS.currentSpeedTrial}");
+            GUILayout.Label($"checkpointNum: {GCS.checkpointNum}");
+
             GUILayout.EndArea();
         }
 
