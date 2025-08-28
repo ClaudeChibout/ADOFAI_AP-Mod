@@ -35,6 +35,9 @@ namespace ADOFAI_AP
         internal string lastItem = "None";
         internal bool showCheckedLocation = false;
 
+        internal int nbLocationsCompleted = 0;
+        internal int nbNonGoalLocations = 0;
+
         // debug var
         internal long idLoc = 0;
         internal string idName = "";
@@ -165,7 +168,7 @@ namespace ADOFAI_AP
         void DrawSelectionMenu()
         {
             GUI.backgroundColor = UnityEngine.Color.magenta;
-            GUILayout.BeginArea(new Rect(200, 50, 400, 400));
+            GUILayout.BeginArea(new Rect(200, 50, 600, 600));
             GUILayout.Label("Select a level");
             if (GUILayout.Button("<"))
             {
@@ -188,7 +191,7 @@ namespace ADOFAI_AP
                 // Skip levels that are not in the format "Key_Level_X-Y"
                 //ADOFAI_AP.Instance.mls.LogInfo($"Checking level: {level}");
 
-                if (level == "Filler Note" || level == "Victory")
+                if (level == "Filler Note")
                 {
                     // Skip the filler note
                     //ADOFAI_AP.Instance.mls.LogInfo("Skipping Filler Note level.");
@@ -218,12 +221,9 @@ namespace ADOFAI_AP
 
                         if (GUILayout.Button(levelName))
                         {   
-                            if (CanEnterInGoalLevels(levelName))
-                            {
-                                ADOFAI_AP.Instance.mls.LogInfo($"Selected level: {levelName}");
-                                currentMenu = MenuState.None;
-                                ADOBase.controller.EnterLevel(levelName, false);
-                            }
+                            ADOFAI_AP.Instance.mls.LogInfo($"Selected level: {levelName}");
+                            currentMenu = MenuState.None;
+                            ADOBase.controller.EnterLevel(levelName, false);
                         }
                     }
                 }
@@ -245,31 +245,8 @@ namespace ADOFAI_AP
 
             GUILayout.Label("ADOFAI AP Menu");
             GUILayout.Label($"LastItem: {lastItem}");
-            /*try
-            {
-                Vector3 pos = scrController.instance.chosenPlanet.storedPosition;
-                scrFloor floor = scrController.instance.chosenPlanet.GetFloorAtPosition(new Vector2(pos.x, pos.y));
-                GUILayout.Label($"current floor id: {floor.seqID} - {floor.gameObject.name}");
-
-            }
-            catch (NullReferenceException)
-            {
-
-            }*/
-
-            /*var t = toggleFloor ? "disable" : "enable";
-            if (GUILayout.Button($"{t} floors"))
-            {
-                foreach (scrFloor f in GameObject.FindObjectsOfType<scrFloor>())
-                {
-                    if (f.seqID == 14)
-                    {
-                        f.gameObject.SetActive(toggleFloor);
-                    }
-                }
-                toggleFloor = !toggleFloor;
-            }*/
-
+            GUILayout.Label($"{nbLocationsCompleted}/{nbNonGoalLocations} nongoal levels completed to reach your percentage goal");
+            GUILayout.Label(ADOFAI_AP.Instance.client.IsAllGoalLevelsCompleted()?"You completed all your goal levels": "You not completed all your goal levels");
             if (GUILayout.Button("Level's selection"))
             {
                 currentMenu = MenuState.Selection; // Switch to connection menu
@@ -291,34 +268,6 @@ namespace ADOFAI_AP
         }
         
 
-        bool CanEnterInGoalLevels(string levelName)
-        {
-            if (!Data_AP.goalLevels.Contains(levelName))
-            {
-                return true;
-            }
-
-            int nb = 0;
-
-            foreach (KeyValuePair<string, bool> kvp in Data_AP.LocationsChecked)
-            {
-                if (kvp.Value && !Data_AP.goalLevels.Contains(kvp.Key)) nb++;
-            }
-            var slotData = ADOFAI_AP.Instance.client.session.DataStorage.GetSlotData();
-            if (int.TryParse(slotData["percentage_goal_completion"]?.ToString(), out int goalPercent))
-            {
-                float completeLevelsNeeded = (float)goalPercent / (float)100;
-                completeLevelsNeeded *= (Data_AP.LocationsChecked.Count() - Data_AP.goalLevels.Count());
-                if (nb < (int)completeLevelsNeeded)
-                {
-                    Notification.Instance.CreateNotification($"You completed {nb} levels, you need to complete {(int)completeLevelsNeeded} levels to Enter Here");
-                    return false;
-                }
-            }
-
-
-            return true;
-        }
 
     }
 }

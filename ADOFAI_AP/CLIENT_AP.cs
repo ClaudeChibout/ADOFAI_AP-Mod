@@ -214,32 +214,72 @@ namespace ADOFAI_AP
 
         public void CheckWin()
         {
-
-            ADOFAI_AP.Instance.mls.LogInfo($"Debut check win");
-            // check if all goalLevels are completed
-            foreach (var level in Data_AP.goalLevels)
+            ADOFAI_AP.Instance.Menu.nbNonGoalLocations = GetHowMuchNonGoalLevels();
+            ADOFAI_AP.Instance.Menu.nbLocationsCompleted = GetHowMuchLevelsCompleted();
+            if (IsAllGoalLevelsCompleted() && IsPercentageComplete())
             {
-                ADOFAI_AP.Instance.mls.LogInfo($"foreach avec level: {level}");
-                if (!Data_AP.LocationsChecked[level])
+                gameEnded = true;
+                session.SetGoalAchieved();
+                Task.Delay(2000).ContinueWith(_ =>
                 {
-                    ADOFAI_AP.Instance.mls.LogInfo($"{level} n'est pas checked");
-                    return;
+                    foreach (long levelId in session.Locations.AllLocationsChecked)
+                    {
+                        var LevelName = session.Locations.GetLocationNameFromId(levelId, session.ConnectionInfo.Game);
+                        //ADOFAI_AP.Instance.mls.LogInfo($"LevelName: {LevelName}");
+                        Data_AP.LocationsChecked[LevelName] = true;
+                    }
+                });
+                Notification.Instance.CreateNotification("You complete the game GG !!!");
+            }
+        }
+        public bool IsPercentageComplete()
+        {
+            int nb = GetHowMuchLevelsCompleted();
+            int total = GetHowMuchNonGoalLevels();
+
+            if (nb < total)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public bool IsAllGoalLevelsCompleted()
+        {   
+            foreach (var levelName in Data_AP.goalLevels)
+            {
+                if (!Data_AP.LocationsChecked[levelName])
+                {
+                    return false;
                 }
             }
-            ADOFAI_AP.Instance.mls.LogInfo($"Tous les niveaux goal sont checked");
-            gameEnded = true;
-            session.SetGoalAchieved();
-            Task.Delay(2000).ContinueWith(_ =>
+
+            return true;
+
+        }
+
+        public int GetHowMuchLevelsCompleted()
+        {
+            int nb = 0;
+
+            foreach (KeyValuePair<string, bool> kvp in Data_AP.LocationsChecked)
             {
-                foreach (long levelId in session.Locations.AllLocationsChecked)
-                {
-                    var LevelName = session.Locations.GetLocationNameFromId(levelId, session.ConnectionInfo.Game);
-                    //ADOFAI_AP.Instance.mls.LogInfo($"LevelName: {LevelName}");
-                    Data_AP.LocationsChecked[LevelName] = true;
-                }
-            });
-            // ADOFAI_AP.Instance.mls.LogInfo($"{id} Victory loc send");
-            Notification.Instance.CreateNotification("You complete the game GG !!!");
+                if (kvp.Value && !Data_AP.goalLevels.Contains(kvp.Key)) nb++;
+            }
+
+            return nb;
+        }
+
+        public int GetHowMuchNonGoalLevels()
+        {
+            var slotData = ADOFAI_AP.Instance.client.session.DataStorage.GetSlotData();
+            if (int.TryParse(slotData["percentage_goal_completion"]?.ToString(), out int goalPercent))
+            {
+                float completeLevelsNeeded = (float)goalPercent / (float)100;
+                completeLevelsNeeded *= (Data_AP.LocationsChecked.Count() - Data_AP.goalLevels.Count());
+                return (int)completeLevelsNeeded;
+            }
+            return 0;
         }
 
         public void LoadWorlds(string worldsOptionName, Dictionary<string, bool> worldsNames, Dictionary<string, bool> worldsKeys)
