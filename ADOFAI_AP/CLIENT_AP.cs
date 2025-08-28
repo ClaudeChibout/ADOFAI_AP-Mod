@@ -8,6 +8,7 @@ using Archipelago.MultiClient.Net.Packets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +24,8 @@ namespace ADOFAI_AP
         internal ArchipelagoSession session = null;
 
         public DeathLinkService DL = null;
+
+        private bool gameEnded = false;
 
         public void Connect(string addr, int port, string slot)
         {
@@ -137,9 +140,10 @@ namespace ADOFAI_AP
                 {   
                     
                     var lastItem = helper.AllItemsReceived[helper.Index - 1];
+                    ADOFAI_AP.Instance.ReceiveItem(lastItem.ItemName);
+                    if (gameEnded) return;
                     Notification.Instance.CreateNotification($"You received: {lastItem.ItemName} from {lastItem.Player} !");
                     ADOFAI_AP.Instance.mls.LogInfo($"Received item: {lastItem.ItemName} (ID: {lastItem.ItemId})");
-                    ADOFAI_AP.Instance.ReceiveItem(lastItem.ItemName);
                 };
 
                 // Handle death link
@@ -203,25 +207,39 @@ namespace ADOFAI_AP
         {
             var id = session.Locations.GetLocationIdFromName(session.ConnectionInfo.Game, name);
             session.Locations.CompleteLocationChecks(id);
+            CheckWin();
             ADOFAI_AP.Instance.mls.LogInfo($"id:{id} submited ");
             Notification.Instance.CreateNotification($"You succeeded: {name} !");
         }
 
         public void CheckWin()
         {
+
+            ADOFAI_AP.Instance.mls.LogInfo($"Debut check win");
+            // check if all goalLevels are completed
             foreach (var level in Data_AP.goalLevels)
             {
-                // check if all goalLevels are completed
+                ADOFAI_AP.Instance.mls.LogInfo($"foreach avec level: {level}");
                 if (!Data_AP.LocationsChecked[level])
                 {
+                    ADOFAI_AP.Instance.mls.LogInfo($"{level} n'est pas checked");
                     return;
                 }
-
-                // Here clear the victory location
-                // create the location with the victory item and put the victory rule with the victory item
-
-                // var id = session.Locations.GetLocationIdFromName(session.ConnectionInfo.Game, name);
             }
+            ADOFAI_AP.Instance.mls.LogInfo($"Tous les niveaux goal sont checked");
+            gameEnded = true;
+            session.SetGoalAchieved();
+            Task.Delay(2000).ContinueWith(_ =>
+            {
+                foreach (long levelId in session.Locations.AllLocationsChecked)
+                {
+                    var LevelName = session.Locations.GetLocationNameFromId(levelId, session.ConnectionInfo.Game);
+                    //ADOFAI_AP.Instance.mls.LogInfo($"LevelName: {LevelName}");
+                    Data_AP.LocationsChecked[LevelName] = true;
+                }
+            });
+            // ADOFAI_AP.Instance.mls.LogInfo($"{id} Victory loc send");
+            Notification.Instance.CreateNotification("You complete the game GG !!!");
         }
 
         public void LoadWorlds(string worldsOptionName, Dictionary<string, bool> worldsNames, Dictionary<string, bool> worldsKeys)

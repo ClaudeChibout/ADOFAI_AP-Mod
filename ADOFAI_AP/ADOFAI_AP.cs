@@ -135,8 +135,8 @@ namespace ADOFAI_AP
                 mls.LogError("Client is not initialized or session is not connected.");
                 return;
             }
-            client.ReportLocation(locationName);
             Data_AP.LocationsChecked[locationName] = true;
+            client.ReportLocation(locationName);
         }
 
         public static void TogglePause(bool paused)

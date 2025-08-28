@@ -93,7 +93,7 @@ namespace ADOFAI_AP
                     break;
             }
 
-            DrawDebugMenu();
+            //DrawDebugMenu();
 
         }
 
@@ -124,6 +124,11 @@ namespace ADOFAI_AP
 
             GUILayout.Label($"currentSpeedTrial: {GCS.currentSpeedTrial}");
             GUILayout.Label($"checkpointNum: {GCS.checkpointNum}");
+
+            if (GUILayout.Button("checkWin", GUILayout.Width(100)))
+            {
+                ADOFAI_AP.Instance.client.CheckWin();
+            }
 
             GUILayout.EndArea();
         }
@@ -183,7 +188,7 @@ namespace ADOFAI_AP
                 // Skip levels that are not in the format "Key_Level_X-Y"
                 //ADOFAI_AP.Instance.mls.LogInfo($"Checking level: {level}");
 
-                if (level == "Filler Note")
+                if (level == "Filler Note" || level == "Victory")
                 {
                     // Skip the filler note
                     //ADOFAI_AP.Instance.mls.LogInfo("Skipping Filler Note level.");
