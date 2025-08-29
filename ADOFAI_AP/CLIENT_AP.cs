@@ -146,6 +146,15 @@ namespace ADOFAI_AP
                     ADOFAI_AP.Instance.mls.LogInfo($"Received item: {lastItem.ItemName} (ID: {lastItem.ItemId})");
                 };
 
+                session.Socket.SocketClosed += _ =>
+                {
+                    Data_AP.goalLevels.Clear();
+                    session = null;
+                    DL = null;
+                    scrController.instance.QuitToMainMenu();
+                    Notification.Instance.CreateNotification($"Connection lost to {addr}:{port}.");
+                };
+
                 // Handle death link
                 if ((bool)slotData["death_link"])
                 {
