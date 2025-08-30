@@ -102,7 +102,7 @@ namespace ADOFAI_AP
 
         void DrawDebugMenu()
         {
-            GUILayout.BeginArea(new Rect(200, 200, 200, 200));
+            GUILayout.BeginArea(new Rect(200, 300, 200, 200));
             //GUILayout.Label($"speedEnabled: {ADOFAI_AP.Instance?.speedEnabled} ({ADOFAI_AP.Instance.speed}-{scrController.instance?.speed})");
             
 
@@ -127,6 +127,8 @@ namespace ADOFAI_AP
 
             GUILayout.Label($"currentSpeedTrial: {GCS.currentSpeedTrial}");
             GUILayout.Label($"checkpointNum: {GCS.checkpointNum}");
+            GUILayout.Label($"FOOL_JOKER: {GCS.FOOL_JOKER}");
+            
 
             if (GUILayout.Button("checkWin", GUILayout.Width(100)))
             {
@@ -241,7 +243,7 @@ namespace ADOFAI_AP
         void DrawMainMenu()
         {
             GUI.backgroundColor = UnityEngine.Color.magenta;
-            GUILayout.BeginArea(new Rect(200, 50, 200, 200));
+            GUILayout.BeginArea(new Rect(200, 50, 200, 250));
 
             GUILayout.Label("ADOFAI AP Menu");
             GUILayout.Label($"LastItem: {lastItem}");
