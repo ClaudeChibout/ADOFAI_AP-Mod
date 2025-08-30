@@ -59,10 +59,6 @@ namespace ADOFAI_AP
                     ADOFAI_AP.Instance.mls.LogInfo($"{opt.Key}: {opt.Value}");
                 }
 
-                // Load goalLevels
-                foreach (var level in ((string)slotData["goal_levels"]).Split()){
-                    Data_AP.goalLevels.Add(level);
-                }
 
                 // Load base Levels
                 LoadWorlds("main_worlds", Data_AP.MainWorlds, Data_AP.MainWorldsKeys);
@@ -121,6 +117,13 @@ namespace ADOFAI_AP
                     LoadWorlds("neon_cosmos_worlds_ex_tuto", Data_AP.NeonCosmosWorldsEXTuto, Data_AP.NeonCosmosWorldsEXTutoKeys);
                 }
 
+                // Load goalLevels
+                foreach (var level in ((string)slotData["goal_levels"]).Split())
+                {   
+                    if (Data_AP.LocationsChecked.ContainsKey(level)){
+                        Data_AP.goalLevels.Add(level);
+                    }
+                }
 
                 // Initialize the mod data
                 foreach (long levelId in session.Locations.AllLocationsChecked)
