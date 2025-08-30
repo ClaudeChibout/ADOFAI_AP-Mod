@@ -229,6 +229,28 @@ namespace ADOFAI_AP.Patches
             { "Key_Level_12-6", false }
         };
 
+        public static Dictionary<string, bool> AprilFoolsWorlds = new Dictionary<string, bool>()
+        {
+            { "1J-X", false },
+            { "2J-X", false },
+            { "3J-X", false },
+            { "4J-X", false },
+            { "5J-X", false },
+            { "6J-X", false },
+            { "BJ-X", false }
+        };
+
+        public static Dictionary<string, bool> AprilFoolsWorldsKeys = new Dictionary<string, bool>()
+        {
+            { "Key_Level_1J-X", true },
+            { "Key_Level_2J-X", false },
+            { "Key_Level_3J-X", false },
+            { "Key_Level_4J-X", false },
+            { "Key_Level_5J-X", false },
+            { "Key_Level_6J-X", false },
+            { "Key_Level_BJ-X", false }
+        };
+
         public static Dictionary<string, bool> XtraWorlds = new Dictionary<string, bool>
         {
             {"XS-X", false},
