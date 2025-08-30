@@ -23,6 +23,11 @@ namespace ADOFAI_AP.Patches
             {   
                 ADOFAI_AP.Instance.mls.LogInfo($"LevelComplete: {scrController.currentLevel} !");
                 ADOFAI_AP.Instance.CollectLocation(scrController.currentLevel);
+                ADOFAI_AP.Instance.Menu.currentMenu = MENU_AP.MenuState.Selection;
+                Task.Delay(1000).ContinueWith(_ =>
+                {
+                    ADOFAI_AP.TogglePause(true);
+                });
                 scrController.instance.QuitToMainMenu();
 
                 return false;
