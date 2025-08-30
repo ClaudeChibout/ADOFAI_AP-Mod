@@ -46,6 +46,7 @@ namespace ADOFAI_AP
                 Notification.Instance.CreateNotification($"Connected to Archipelago server at {addr}:{port} as {slot}.");
                 ADOFAI_AP.Instance.Menu.isConnected = true;
                 ADOFAI_AP.Instance.Menu.currentMenu = MENU_AP.MenuState.Main;
+
                 Task.Delay(1000).ContinueWith(_ =>
                 {
                     ADOFAI_AP.TogglePause(true);
@@ -141,6 +142,10 @@ namespace ADOFAI_AP
                 {
                     ADOFAI_AP.Instance.ReceiveItem(item.ItemName);
                 }
+
+                // set the menu variables
+                ADOFAI_AP.Instance.Menu.nbNonGoalLocations = GetHowMuchNonGoalLevels();
+                ADOFAI_AP.Instance.Menu.nbLocationsCompleted = GetHowMuchLevelsCompleted();
 
                 ADOFAI_AP.Instance.mls.LogInfo($"Connected to Archipelago server at {addr}:{port} as {slot}.");
                 session.Items.ItemReceived += (helper) =>
