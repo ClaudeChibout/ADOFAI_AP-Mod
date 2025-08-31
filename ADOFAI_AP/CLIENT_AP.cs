@@ -42,6 +42,8 @@ namespace ADOFAI_AP
             if (isConnected.Successful)
             {
                 scrController.instance.QuitToMainMenu();
+                // reset the checkpoint on connect
+                Persistence.SetSavedProgress(new Dictionary<string, object>());
                 ADOFAI_AP.Instance.mls.LogInfo($"Connected to Archipelago server at {addr}:{port} as {slot}.");
                 Notification.Instance.CreateNotification($"Connected to Archipelago server at {addr}:{port} as {slot}.");
                 ADOFAI_AP.Instance.Menu.isConnected = true;

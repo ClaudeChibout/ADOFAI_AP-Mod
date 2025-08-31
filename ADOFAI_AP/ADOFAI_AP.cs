@@ -120,6 +120,30 @@ namespace ADOFAI_AP
                 scrController.instance.speed = speed;
             }*/
 
+            /*if ( Input.GetKeyDown(KeyCode.Keypad1) )
+            {
+                var savedProgress = Persistence.GetSavedProgress();
+                savedProgress["level"] = "4-X";
+                Persistence.SetSavedProgress(savedProgress);
+            }
+            if (Input.GetKeyDown(KeyCode.Keypad3))
+            {
+                var savedProgress = Persistence.GetSavedProgress();
+                savedProgress["level"] = "3-X";
+                Persistence.SetSavedProgress(savedProgress);
+            }
+            if (Input.GetKeyDown(KeyCode.Keypad2))
+            {
+                mls.LogInfo($"------------------------------");
+                mls.LogInfo($"| vvvv SavedProgress vvvv |");
+                mls.LogInfo($"------------------------------");
+                foreach (KeyValuePair<string, object> pair in Persistence.GetSavedProgress())
+                {
+                    mls.LogInfo($"{pair.Key}: {pair.Value}");
+                }
+                mls.LogInfo($"------------------------------");
+            }*/
+
         }
 
         internal void ReceiveItem(string itemName)
