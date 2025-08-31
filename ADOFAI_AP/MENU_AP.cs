@@ -43,6 +43,7 @@ namespace ADOFAI_AP
         internal string idName = "";
         internal string lvlName = string.Empty;
         internal bool fromDebugMenu = false;
+        internal int recupCheckpoint = 0;
 
         void Awake()
         {   
@@ -96,13 +97,13 @@ namespace ADOFAI_AP
                     break;
             }
 
-            //DrawDebugMenu();
+            // DrawDebugMenu();
 
         }
 
         void DrawDebugMenu()
         {
-            GUILayout.BeginArea(new Rect(200, 300, 200, 200));
+            GUILayout.BeginArea(new Rect(20, 300, 200, 200));
             //GUILayout.Label($"speedEnabled: {ADOFAI_AP.Instance?.speedEnabled} ({ADOFAI_AP.Instance.speed}-{scrController.instance?.speed})");
             
 
@@ -126,8 +127,18 @@ namespace ADOFAI_AP
             GUILayout.EndHorizontal();
 
             GUILayout.Label($"currentSpeedTrial: {GCS.currentSpeedTrial}");
+            GUILayout.BeginHorizontal();
             GUILayout.Label($"checkpointNum: {GCS.checkpointNum}");
-            GUILayout.Label($"FOOL_JOKER: {GCS.FOOL_JOKER}");
+            if (GUILayout.Button("<", GUILayout.Width(50)))
+            {
+                GCS.checkpointNum -= 1;
+            }
+            if (GUILayout.Button(">", GUILayout.Width(50)))
+            {
+                GCS.checkpointNum += 1;
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.Label($"savedCheckpointNum: {GCS.savedCheckpointNum}");
             
 
             if (GUILayout.Button("checkWin", GUILayout.Width(100)))
