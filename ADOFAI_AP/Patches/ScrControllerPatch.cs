@@ -65,6 +65,18 @@ namespace ADOFAI_AP.Patches
 
         }
 
+        [HarmonyPatch("QuitToMainMenu")]
+        [HarmonyPrefix]
+        static bool PatchQuitToMainMenu()
+        {
+            if (ADOFAI_AP.Instance.client.session == null)
+            {
+                return true;
+            }
+            GCS.FOOL_JOKER = false;
+            return true;
+        }
+
         [HarmonyPatch("Restart")]
         [HarmonyPrefix]
         static bool PatchRestart()
