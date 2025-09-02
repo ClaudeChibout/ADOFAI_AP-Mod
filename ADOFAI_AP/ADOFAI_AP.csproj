@@ -86,6 +86,7 @@
     <Compile Include="Patches\PauseLevelPatch.cs" />
     <Compile Include="Patches\PlanetarySystemPatch.cs" />
     <Compile Include="Patches\ScrControllerPatch.cs" />
+    <Compile Include="Patches\ScrMistakesManagerPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

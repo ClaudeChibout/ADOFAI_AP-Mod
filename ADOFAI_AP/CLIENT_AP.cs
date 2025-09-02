@@ -5,8 +5,11 @@ using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Packets;
+using BepInEx;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Runtime.Remoting.Messaging;
@@ -26,6 +29,7 @@ namespace ADOFAI_AP
         public DeathLinkService DL = null;
 
         private bool gameEnded = false;
+        private Dictionary<string, object> progress;
 
         public void Connect(string addr, int port, string slot)
         {
@@ -43,7 +47,35 @@ namespace ADOFAI_AP
             {
                 scrController.instance.QuitToMainMenu();
                 // reset the checkpoint on connect
-                Persistence.SetSavedProgress(new Dictionary<string, object>());
+                progress = new Dictionary<string, object>();
+
+                // load saved progress if exist
+                string saveFolder = Path.Combine(Paths.ConfigPath, "ArchipelagoSessions");
+                Directory.CreateDirectory(saveFolder);
+                string sessionSeed = session.RoomState.Seed;
+                string filePath = Path.Combine(saveFolder, $"{sessionSeed}.dat");
+                if (File.Exists(filePath))
+                {
+                    string json = File.ReadAllText(filePath);
+                    progress = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                    ADOFAI_AP.Instance.mls.LogInfo($"Loaded saved progress for seed:{sessionSeed}");
+                    foreach (KeyValuePair<string, object> pair in progress)
+                    {
+                        ADOFAI_AP.Instance.mls.LogInfo($"{pair.Key}: {pair.Value}");
+                    }
+                    // Utilise les données comme tu veux
+                    try
+                    {
+                        progress["checkpointNum"] = Convert.ToInt32(progress["checkpointNum"]);
+                        progress["lastHitMarginsSize"] = Convert.ToInt32(progress["lastHitMarginsSize"]);
+                        progress["checkpointsUsed"] = Convert.ToInt32(progress["checkpointsUsed"]);
+                    }
+                    catch (Exception e)
+                    {
+                        ADOFAI_AP.Instance.mls.LogInfo($"Error while parsing saved progress: {e.Message}");
+                    }
+                }
+                Persistence.SetSavedProgress(progress);
                 ADOFAI_AP.Instance.mls.LogInfo($"Connected to Archipelago server at {addr}:{port} as {slot}.");
                 Notification.Instance.CreateNotification($"Connected to Archipelago server at {addr}:{port} as {slot}.");
                 ADOFAI_AP.Instance.Menu.isConnected = true;
