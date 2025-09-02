@@ -36,13 +36,7 @@ namespace ADOFAI_AP
 
         void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Keypad1))
-            {
-                // Example of how to create a notification
-                ADOFAI_AP.Instance.mls.LogInfo($"Creating the test notification  N°{Notification.Instance.notificationCount}.");
-                ADOFAI_AP.Instance.mls.LogInfo($"Size: {Screen.width}, {Screen.height}");
-                CreateNotification($"This is the test notification N°{Notification.Instance.notificationCount}! ");
-            }
+
         }
 
         void OnGUI()
