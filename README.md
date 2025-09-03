@@ -1,5 +1,4 @@
 # 🎶 ADOFAI Archipelago Client  
-![Build Status](https://img.shields.io/github/actions/workflow/status/ClaudeChibout/ADOFAI_AP-Mod/build.yml?branch=main)
 ![Archipelago Version](https://img.shields.io/badge/Archipelago-0.6.3-blue)
 
 A custom mod for [A Dance of Fire and Ice (ADOFAI)](https://store.steampowered.com/app/977950/A_Dance_of_Fire_and_Ice/) built with **BepInEx**, integrating the game with the [Archipelago](https://archipelago.gg/) multiworld randomizer system.
