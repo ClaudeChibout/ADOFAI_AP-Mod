@@ -8,7 +8,6 @@ using Archipelago.MultiClient.Net.Packets;
 using BepInEx;
 using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,7 +21,7 @@ using UnityEngine.SceneManagement;
 
 namespace ADOFAI_AP
 {
-    internal class CLIENT_AP : MonoBehaviour
+    internal class CLIENT_AP
     {
 
         internal ArchipelagoSession session = null;
@@ -40,6 +39,8 @@ namespace ADOFAI_AP
             var isConnected = session.TryConnectAndLogin("A Dance of Fire and Ice", slot,
                 ItemsHandlingFlags.AllItems, new Version(0, 6, 3), tags);
             ADOFAI_AP.Instance.mls.LogInfo($"is Connected ready {isConnected.Successful}");
+
+
 
 
             if (isConnected.Successful)
@@ -75,12 +76,11 @@ namespace ADOFAI_AP
                     }
                 }
                 Persistence.SetSavedProgress(progress);
-
                 ADOFAI_AP.Instance.mls.LogInfo($"Connected to Archipelago server at {addr}:{port} as {slot}.");
                 Notification.Instance.CreateNotification($"Connected to Archipelago server at {addr}:{port} as {slot}.");
                 ADOFAI_AP.Instance.Menu.isConnected = true;
                 ADOFAI_AP.Instance.Menu.currentMenu = MENU_AP.MenuState.Main;
-                
+
                 Task.Delay(1000).ContinueWith(_ =>
                 {
                     ADOFAI_AP.TogglePause(true);
@@ -158,15 +158,16 @@ namespace ADOFAI_AP
 
                 // Load goalLevels
                 foreach (var level in ((string)slotData["goal_levels"]).Split())
-                {   
-                    if (Data_AP.LocationsChecked.ContainsKey(level)){
+                {
+                    if (Data_AP.LocationsChecked.ContainsKey(level))
+                    {
                         Data_AP.goalLevels.Add(level);
                     }
                 }
 
                 // Initialize the mod data
                 foreach (long levelId in session.Locations.AllLocationsChecked)
-                {   
+                {
                     var LevelName = session.Locations.GetLocationNameFromId(levelId, session.ConnectionInfo.Game);
                     //ADOFAI_AP.Instance.mls.LogInfo($"LevelName: {LevelName}");
                     Data_AP.LocationsChecked[LevelName] = true;
@@ -183,8 +184,8 @@ namespace ADOFAI_AP
 
                 ADOFAI_AP.Instance.mls.LogInfo($"Connected to Archipelago server at {addr}:{port} as {slot}.");
                 session.Items.ItemReceived += (helper) =>
-                {   
-                    
+                {
+
                     var lastItem = helper.AllItemsReceived[helper.Index - 1];
                     ADOFAI_AP.Instance.ReceiveItem(lastItem.ItemName);
                     if (gameEnded) return;
@@ -192,12 +193,13 @@ namespace ADOFAI_AP
                     ADOFAI_AP.Instance.mls.LogInfo($"Received item: {lastItem.ItemName} (ID: {lastItem.ItemId})");
                 };
 
-                session.Socket.SocketClosed += (reason) =>
+                session.Socket.SocketClosed += _ =>
                 {
-                    Notification.Instance.CreateNotification($"Reason: {reason}");
+                    Data_AP.goalLevels.Clear();
+                    session = null;
+                    DL = null;
+                    scrController.instance.QuitToMainMenu();
                     Notification.Instance.CreateNotification($"Connection lost to {addr}:{port}.");
-
-                    HandleSocketClosed();
                 };
 
                 // Handle death link
@@ -299,7 +301,7 @@ namespace ADOFAI_AP
         }
 
         public bool IsAllGoalLevelsCompleted()
-        {   
+        {
             foreach (var levelName in Data_AP.goalLevels)
             {
                 if (!Data_AP.LocationsChecked[levelName])
@@ -337,7 +339,7 @@ namespace ADOFAI_AP
         }
 
         public void LoadWorlds(string worldsOptionName, Dictionary<string, bool> worldsNames, Dictionary<string, bool> worldsKeys)
-        {   
+        {
             foreach (var kvp in worldsNames)
             {
                 Data_AP.LocationsChecked[kvp.Key] = kvp.Value;
@@ -352,18 +354,10 @@ namespace ADOFAI_AP
         public async Task Disconnect()
         {
             await session.Socket.DisconnectAsync();
-            HandleSocketClosed();
-        }
-
-        public void HandleSocketClosed()
-        {   
             Data_AP.goalLevels.Clear();
             session = null;
             DL = null;
             scrController.instance.QuitToMainMenu();
-            ADOFAI_AP.Instance.Menu.isConnected = false;
-            ADOFAI_AP.Instance.Menu.currentMenu = MENU_AP.MenuState.Connection;
-            StopCoroutine("HeartbeatCoroutine");
         }
 
     }
