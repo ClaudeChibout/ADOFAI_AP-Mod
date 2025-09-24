@@ -34,6 +34,7 @@ namespace ADOFAI_AP
 
         internal string lastItem = "None";
         internal bool showCheckedLocation = false;
+        internal bool hideGoalLocation = false;
 
         internal int nbLocationsCompleted = 0;
         internal int nbNonGoalLocations = 0;
@@ -197,10 +198,21 @@ namespace ADOFAI_AP
                 showCheckedLocation = false;
             }
 
+            if (GUILayout.Toggle(hideGoalLocation, "hideGoalLevel"))
+            {
+                hideGoalLocation = true;
+            }
+            else
+            {
+                hideGoalLocation = false;
+            }
+
             GUILayout.BeginHorizontal();
             var cpt = 0;
             foreach (var level in Data_AP.ItemsReceived.Keys)
             {
+                if (Data_AP.goalLevels.Contains(level.Substring(10)) && hideGoalLocation) continue;
+
                 // Skip levels that are not in the format "Key_Level_X-Y"
                 //ADOFAI_AP.Instance.mls.LogInfo($"Checking level: {level}");
 
@@ -213,7 +225,9 @@ namespace ADOFAI_AP
 
                 try
                 {
-                    if (Data_AP.ItemsReceived[level] && (!Data_AP.LocationsChecked[level.Substring(10)] || showCheckedLocation))
+                    //if (Data_AP.goalLevels.Contains(level.Substring(10)) && hideGoalLocation) continue; 
+                    if (Data_AP.ItemsReceived[level] && (!Data_AP.LocationsChecked[level.Substring(10)] || showCheckedLocation)
+                        )
                     {
                         var levelName = level.Substring(10); // Extract the level name
                         cpt++;
