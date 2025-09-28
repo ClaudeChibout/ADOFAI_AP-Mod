@@ -36,6 +36,14 @@ namespace ADOFAI_AP
         internal bool showCheckedLocation = false;
         internal bool hideGoalLocation = false;
 
+        internal bool normalWorld = true;
+        internal bool extraWorld = true;
+        internal bool starWorld = true;
+        internal bool crownWorld = true;
+        internal bool aprilFoolsWorld = true;
+        internal bool neonWorlds = true;
+        internal bool neonExtraWorlds = true;
+
         internal int nbLocationsCompleted = 0;
         internal int nbNonGoalLocations = 0;
 
@@ -189,29 +197,28 @@ namespace ADOFAI_AP
                 currentMenu = MenuState.Main; // Switch back to main menu
             }
 
-            if (GUILayout.Toggle(showCheckedLocation, "showCheckedLevel"))
-            {
-                showCheckedLocation = true;
-            }
-            else
-            {
-                showCheckedLocation = false;
-            }
-
-            if (GUILayout.Toggle(hideGoalLocation, "hideGoalLevel"))
-            {
-                hideGoalLocation = true;
-            }
-            else
-            {
-                hideGoalLocation = false;
-            }
+            showCheckedLocation = GUILayout.Toggle(showCheckedLocation, "showCheckedLevel");
+            hideGoalLocation = GUILayout.Toggle(hideGoalLocation, "hideGoalLevel") ? true : false;
+            normalWorld = GUILayout.Toggle(normalWorld, "normalWorld") ? true : false;
+            extraWorld = GUILayout.Toggle(extraWorld, "extraWorld") ? true : false;
+            starWorld = GUILayout.Toggle(starWorld, "starWorld") ? true : false;
+            crownWorld = GUILayout.Toggle(crownWorld, "crownWorld") ? true : false;
+            aprilFoolsWorld = GUILayout.Toggle(aprilFoolsWorld, "aprilFoolsWorld") ? true : false;
+            neonWorlds = GUILayout.Toggle(neonWorlds, "neonWorlds") ? true : false;
+            neonExtraWorlds = GUILayout.Toggle(neonExtraWorlds, "neonExtraWorlds") ? true : false;
 
             GUILayout.BeginHorizontal();
             var cpt = 0;
             foreach (var level in Data_AP.ItemsReceived.Keys)
             {
                 if (Data_AP.goalLevels.Contains(level.Substring(10)) && hideGoalLocation) continue;
+                if ((Data_AP.MainWorlds[level.Substring(10)] || Data_AP.MainWorldsTuto[level.Substring(10)]) && !normalWorld) continue;
+                if ((Data_AP.XtraWorlds[level.Substring(10)] || Data_AP.XtraTuto[level.Substring(10)]) && !extraWorld) continue;
+                if ((Data_AP.StarWorlds[level.Substring(10)] || Data_AP.StarWorldsTuto[level.Substring(10)]) && !starWorld) continue;
+                if ((Data_AP.CrownWorlds[level.Substring(10)] || Data_AP.CrownWorldsTuto[level.Substring(10)]) && !crownWorld) continue;
+                if (Data_AP.AprilFoolsWorlds[level.Substring(10)] && !aprilFoolsWorld) continue;
+                if ((Data_AP.NeonCosmosWorlds[level.Substring(10)] || Data_AP.NeonCosmosWorldsTuto[level.Substring(10)]) && !neonWorlds) continue;
+                if ((Data_AP.NeonCosmosWorldsEX[level.Substring(10)] || Data_AP.NeonCosmosWorldsEXTuto[level.Substring(10)]) && !neonExtraWorlds) continue;
 
                 // Skip levels that are not in the format "Key_Level_X-Y"
                 //ADOFAI_AP.Instance.mls.LogInfo($"Checking level: {level}");
