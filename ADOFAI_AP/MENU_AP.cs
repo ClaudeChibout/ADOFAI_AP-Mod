@@ -41,6 +41,7 @@ namespace ADOFAI_AP
         internal bool starWorld = true;
         internal bool crownWorld = true;
         internal bool aprilFoolsWorld = true;
+        internal bool BWorld = true;
         internal bool neonWorlds = true;
         internal bool neonExtraWorlds = true;
 
@@ -196,29 +197,36 @@ namespace ADOFAI_AP
             {
                 currentMenu = MenuState.Main; // Switch back to main menu
             }
-
+            GUILayout.BeginHorizontal();
+            GUILayout.BeginVertical();
             showCheckedLocation = GUILayout.Toggle(showCheckedLocation, "showCheckedLevel");
-            hideGoalLocation = GUILayout.Toggle(hideGoalLocation, "hideGoalLevel") ? true : false;
-            normalWorld = GUILayout.Toggle(normalWorld, "normalWorld") ? true : false;
-            extraWorld = GUILayout.Toggle(extraWorld, "extraWorld") ? true : false;
-            starWorld = GUILayout.Toggle(starWorld, "starWorld") ? true : false;
-            crownWorld = GUILayout.Toggle(crownWorld, "crownWorld") ? true : false;
-            aprilFoolsWorld = GUILayout.Toggle(aprilFoolsWorld, "aprilFoolsWorld") ? true : false;
-            neonWorlds = GUILayout.Toggle(neonWorlds, "neonWorlds") ? true : false;
-            neonExtraWorlds = GUILayout.Toggle(neonExtraWorlds, "neonExtraWorlds") ? true : false;
-
+            hideGoalLocation = GUILayout.Toggle(hideGoalLocation, "hideGoalLevel");
+            normalWorld = GUILayout.Toggle(normalWorld, "normalWorld");
+            extraWorld = GUILayout.Toggle(extraWorld, "extraWorld");
+            starWorld = GUILayout.Toggle(starWorld, "starWorld");
+            GUILayout.EndVertical();
+            GUILayout.BeginVertical();
+            crownWorld = GUILayout.Toggle(crownWorld, "crownWorld");
+            aprilFoolsWorld = GUILayout.Toggle(aprilFoolsWorld, "aprilFoolsWorld");
+            BWorld = GUILayout.Toggle(BWorld, "BWorld");
+            neonWorlds = GUILayout.Toggle(neonWorlds, "neonWorlds");
+            neonExtraWorlds = GUILayout.Toggle(neonExtraWorlds, "neonExtraWorlds");
+            GUILayout.EndVertical();
+            GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
             var cpt = 0;
             foreach (var level in Data_AP.ItemsReceived.Keys)
             {
                 if (Data_AP.goalLevels.Contains(level.Substring(10)) && hideGoalLocation) continue;
-                if ((Data_AP.MainWorlds[level.Substring(10)] || Data_AP.MainWorldsTuto[level.Substring(10)]) && !normalWorld) continue;
-                if ((Data_AP.XtraWorlds[level.Substring(10)] || Data_AP.XtraTuto[level.Substring(10)]) && !extraWorld) continue;
-                if ((Data_AP.StarWorlds[level.Substring(10)] || Data_AP.StarWorldsTuto[level.Substring(10)]) && !starWorld) continue;
-                if ((Data_AP.CrownWorlds[level.Substring(10)] || Data_AP.CrownWorldsTuto[level.Substring(10)]) && !crownWorld) continue;
-                if (Data_AP.AprilFoolsWorlds[level.Substring(10)] && !aprilFoolsWorld) continue;
-                if ((Data_AP.NeonCosmosWorlds[level.Substring(10)] || Data_AP.NeonCosmosWorldsTuto[level.Substring(10)]) && !neonWorlds) continue;
-                if ((Data_AP.NeonCosmosWorldsEX[level.Substring(10)] || Data_AP.NeonCosmosWorldsEXTuto[level.Substring(10)]) && !neonExtraWorlds) continue;
+                // || level.Substring(10).StartsWith("1-") à retirer lorsque le start avec des levels ramdom sera dispo
+                if ((Data_AP.MainWorlds.Keys.Contains(level.Substring(10)) || Data_AP.MainWorldsTuto.Keys.Contains(level.Substring(10)) || level.Substring(10).StartsWith("1-")) && !normalWorld) continue;
+                if ((Data_AP.XtraWorlds.Keys.Contains(level.Substring(10)) || Data_AP.XtraTuto.Keys.Contains(level.Substring(10))) && !extraWorld) continue;
+                if ((Data_AP.StarWorlds.Keys.Contains(level.Substring(10)) || Data_AP.StarWorldsTuto.Keys.Contains(level.Substring(10))) && !starWorld) continue;
+                if ((Data_AP.CrownWorlds.Keys.Contains(level.Substring(10)) || Data_AP.CrownWorldsTuto.Keys.Contains(level.Substring(10))) && !crownWorld) continue;
+                if (Data_AP.AprilFoolsWorlds.Keys.Contains(level.Substring(10)) && !aprilFoolsWorld) continue;
+                if ((Data_AP.BWorld.Keys.Contains(level.Substring(10)) || Data_AP.BWorldTuto.Keys.Contains(level.Substring(10))) && !BWorld) continue;
+                if ((Data_AP.NeonCosmosWorlds.Keys.Contains(level.Substring(10)) || Data_AP.NeonCosmosWorldsTuto.Keys.Contains(level.Substring(10))) && !neonWorlds) continue;
+                if ((Data_AP.NeonCosmosWorldsEX.Keys.Contains(level.Substring(10)) || Data_AP.NeonCosmosWorldsEXTuto.Keys.Contains(level.Substring(10))) && !neonExtraWorlds) continue;
 
                 // Skip levels that are not in the format "Key_Level_X-Y"
                 //ADOFAI_AP.Instance.mls.LogInfo($"Checking level: {level}");
