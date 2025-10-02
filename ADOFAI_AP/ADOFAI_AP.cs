@@ -107,9 +107,7 @@ namespace ADOFAI_AP
         {
             /*if ( Input.GetKeyDown(KeyCode.Keypad2) )
             {
-                scrController.instance.paused = !scrController.instance.paused;
-                scrController.instance.audioPaused = scrController.instance.paused;
-                Time.timeScale = (scrController.instance.paused ? 0f : 1f);
+                Notification.Instance.CreateNotification($"nb of notif: {Notification.Instance.notificationCount} !");
             }*/
 
             /*if ( Input.GetKeyDown(KeyCode.Keypad3) )

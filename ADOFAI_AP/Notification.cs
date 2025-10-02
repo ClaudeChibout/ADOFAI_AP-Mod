@@ -17,13 +17,7 @@ namespace ADOFAI_AP
         internal int notificationCount = 0;
         static int firstNotification = 0; // This will be used to track the first notification for removal
 
-        /*public Notification(string NotificationText)
-        {
-            text = NotificationText;
-            id = notificationCount++; // Assign a unique ID to this notification starting from 0
-            notifications[id] = this; // Store the notification in the dictionary
-            Task.Delay(5000).ContinueWith(_ => Remove()); // Automatically remove the notification after 5 seconds
-        }*/
+        internal Queue<string> buffer = new Queue<string>();
 
         void Awake()
         {
@@ -71,6 +65,15 @@ namespace ADOFAI_AP
 
         public void CreateNotification(string NotificationText)
         {
+
+            // buffering if there is 8 notification displayed
+            // to avoid crash with notification spam
+            if (notificationCount - firstNotification >= 8)
+            {
+                buffer.Enqueue(NotificationText);
+                return;
+            }
+
             // Create a new notification with the given text
             var id = notificationCount++;
             notifications[id] = NotificationText; // Store the notification in the dictionary
@@ -83,7 +86,9 @@ namespace ADOFAI_AP
             // Remove the notification from the dictionary
             notifications.Remove(id);
             scrSfx.instance.PlaySfx(SfxSound.AchievementBubbleClose, MixerGroup.InterfaceParent, .2f, 1f, 0f);
-            firstNotification++;
+            ++firstNotification;
+            // if there is notifications in buffer release the first one
+            Task.Delay(500).ContinueWith(_ => CreateNotification(buffer.Dequeue()));
         }
 
     }
