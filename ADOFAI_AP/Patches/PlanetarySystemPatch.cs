@@ -17,9 +17,23 @@ namespace ADOFAI_AP.Patches
         {   
             if (ADOFAI_AP.Instance.client.session != null)
             {
-                ADOFAI_AP.Instance.client?.DL?.SendDeathLink(new DeathLink(ADOFAI_AP.Instance.Menu.pseudo, null));
-                Notification.Instance.CreateNotification($"You're dead, and your friends too !");
-                //Notification.Instance.CreateNotification($"");
+                // Si DeathLink est désactivé dans le menu, on ne fait rien.
+                if (ADOFAI_AP.Instance.client.DeathLinkMod_Disable) return true;
+
+                ++ADOFAI_AP.Instance.client.SessionDeathCount;
+                var count = ++ADOFAI_AP.Instance.client.DeathCount % ADOFAI_AP.Instance.client.DeathLinkMod_CountBeforeDeath;
+                if (count == 0)
+                {
+                    ADOFAI_AP.Instance.client?.DL?.SendDeathLink(new DeathLink(ADOFAI_AP.Instance.Menu.pseudo, null));
+                    Notification.Instance.CreateNotification($"You're dead, and your friends too !");
+                    ADOFAI_AP.Instance.mls.LogInfo($"DeathLink sent, you have died {ADOFAI_AP.Instance.client.SessionDeathCount} times in this session.");
+                }
+                else
+                {
+                    ADOFAI_AP.Instance.mls.LogInfo($"You have died {ADOFAI_AP.Instance.client.SessionDeathCount} times in this session. You need to die {ADOFAI_AP.Instance.client.DeathLinkMod_CountBeforeDeath - count} more time(s) to send a DeathLink.");
+                    Notification.Instance.CreateNotification($"You need to die {ADOFAI_AP.Instance.client.DeathLinkMod_CountBeforeDeath - count} more time(s) to send a DeathLink.");
+                }
+
             }
             return true; // Continue with the original method
         }

@@ -24,6 +24,7 @@ namespace ADOFAI_AP
             Connection,     // Menu de connexion
             Main,           // Menu principal
             Selection,     // Menu de sélection de niveau
+            Options,         // Menu des options
         }
 
         internal MenuState currentMenu = MenuState.None;
@@ -103,6 +104,9 @@ namespace ADOFAI_AP
                 case MenuState.Selection:
                     DrawSelectionMenu();
                     break;
+                case MenuState.Options:
+                    DrawOptionsMenu();
+                    break;
                 default:
                     break;
             }
@@ -156,6 +160,41 @@ namespace ADOFAI_AP
                 ADOFAI_AP.Instance.client.CheckWin();
             }
 
+            GUILayout.EndArea();
+        }
+
+
+        void DrawOptionsMenu()
+        {
+            GUILayout.BeginArea(new Rect(200, 50, 400, 400));
+            GUILayout.Label("Options");
+            // Add your options here
+            if (GUILayout.Button("Back"))
+            {
+                currentMenu = MenuState.Main; // Switch back to main menu
+            }
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("DeathLink Mod:" + (ADOFAI_AP.Instance.client.DeathLinkMod_Disable ? "Disabled" : "Enabled"));
+            if (GUILayout.Button(ADOFAI_AP.Instance.client.DeathLinkMod_Disable ? "Enable" : "Disable"))
+            {
+                ADOFAI_AP.Instance.client.DeathLinkMod_Disable = !ADOFAI_AP.Instance.client.DeathLinkMod_Disable;
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.Label("Number of deaths before sending a DeathLink:");
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("-"))
+            {
+                if (ADOFAI_AP.Instance.client.DeathLinkMod_CountBeforeDeath > 1)
+                    ADOFAI_AP.Instance.client.DeathLinkMod_CountBeforeDeath--;
+            }
+            GUILayout.Label("" + ADOFAI_AP.Instance.client.DeathLinkMod_CountBeforeDeath);
+            if (GUILayout.Button("+"))
+            {
+                ADOFAI_AP.Instance.client.DeathLinkMod_CountBeforeDeath++;
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.Label($"DeathLink Count Before Death: {ADOFAI_AP.Instance.client.DeathLinkMod_CountBeforeDeath - ADOFAI_AP.Instance.client.DeathCount}");
+            GUILayout.TextField("Version: " + ADOFAI_AP.modVersion);
             GUILayout.EndArea();
         }
 
@@ -300,12 +339,17 @@ namespace ADOFAI_AP
                 isConnected = false;
                 currentMenu = MenuState.Connection;
             }
-
+            GUILayout.BeginHorizontal();
             if (GUILayout.Button("Close Menu"))
             {
                 currentMenu = MenuState.None;
                 ADOFAI_AP.TogglePause(false);
             }
+            if (GUILayout.Button("Options"))
+            {
+                currentMenu = MenuState.Options;
+            }
+            GUILayout.EndHorizontal();
             GUILayout.EndArea();
         }
         

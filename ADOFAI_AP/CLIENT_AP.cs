@@ -28,6 +28,11 @@ namespace ADOFAI_AP
 
         public DeathLinkService DL = null;
 
+        public bool DeathLinkMod_Disable = false;
+        public int DeathLinkMod_CountBeforeDeath = 1;
+        public int SessionDeathCount = 0;
+        public int DeathCount = 0;
+
         private bool gameEnded = false;
         private Dictionary<string, object> progress;
 
@@ -207,7 +212,8 @@ namespace ADOFAI_AP
                 {
                     DL = DeathLinkProvider.CreateDeathLinkService(session);
                     DL.OnDeathLinkReceived += (deathLink) =>
-                    {
+                    {   
+                        if (DeathLinkMod_Disable) return;
                         ADOFAI_AP.Instance.mls.LogInfo($"DeathLink received: {deathLink.Source} died at {deathLink.Cause}");
                         Notification.Instance.CreateNotification($"{deathLink.Source} has died ! {deathLink.Cause}");
 
