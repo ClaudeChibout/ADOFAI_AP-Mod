@@ -6,6 +6,7 @@ using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Packets;
 using BepInEx;
+using BepInEx.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -28,16 +29,17 @@ namespace ADOFAI_AP
 
         public DeathLinkService DL = null;
 
-        public bool DeathLinkMod_Disable = false;
-        public int DeathLinkMod_CountBeforeDeath = 1;
-        public int SessionDeathCount = 0;
-        public int DeathCount = 0;
 
         private bool gameEnded = false;
+        public bool DeathLinkMod_Disable = false;
+        public ConfigEntry<int> DeathLinkMod_MaxHealth;
+        public ConfigEntry<int> SessionDeathCount;
+        public int currentLife = 0;
         private Dictionary<string, object> progress;
 
         public void Connect(string addr, int port, string slot)
         {
+            DeathLinkMod_Disable = true;
             string[] tags = new string[] { "DeathLink" };
             session = ArchipelagoSessionFactory.CreateSession(addr, port);
             ADOFAI_AP.Instance.mls.LogInfo($"session crée...");
@@ -54,6 +56,9 @@ namespace ADOFAI_AP
                 // reset the checkpoint on connect
                 progress = new Dictionary<string, object>();
 
+                DeathLinkMod_MaxHealth = ADOFAI_AP.Instance.BindConfig<int>("DeathLinkMod_" + session.RoomState.Seed, "MaxHealth", 1, "Number of deaths before sending a DeathLink");
+                SessionDeathCount = ADOFAI_AP.Instance.BindConfig<int>("DeathLinkMod_" + session.RoomState.Seed, "SessionDeathCount", 0, "Number of DeathLink sent in this session");
+                currentLife = DeathLinkMod_MaxHealth.Value;
                 // load saved progress if exist
                 string saveFolder = Path.Combine(Paths.ConfigPath, "ArchipelagoSessions");
                 Directory.CreateDirectory(saveFolder);
@@ -210,6 +215,7 @@ namespace ADOFAI_AP
                 // Handle death link
                 if ((bool)slotData["death_link"])
                 {
+                    ADOFAI_AP.Instance.client.DeathLinkMod_Disable = false;
                     DL = DeathLinkProvider.CreateDeathLinkService(session);
                     DL.OnDeathLinkReceived += (deathLink) =>
                     {   

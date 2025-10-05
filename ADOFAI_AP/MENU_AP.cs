@@ -56,12 +56,21 @@ namespace ADOFAI_AP
         internal bool fromDebugMenu = false;
         internal int recupCheckpoint = 0;
 
+
+        Texture2D boxTexture;
         void Awake()
-        {   
+        {
             if (Instance == null)
-            {   
+            {
                 Instance = this;
                 ADOFAI_AP.Instance.mls.LogError("MENU_AP is initialized!");
+            }
+
+            if (boxTexture == null)
+            {
+                boxTexture = new Texture2D(1, 1);
+                boxTexture.SetPixel(0, 0, new UnityEngine.Color(0.039f, 0.072f, 0.325f, 0.6f)); // Semi-transparent black
+                boxTexture.Apply();
             }
 
             StartCoroutine(DelayedMenuOpen());
@@ -91,9 +100,22 @@ namespace ADOFAI_AP
             }
         }
 
+        GUIStyle boxStyle;
+        GUIStyle labelStyle;
         void OnGUI()
-        {
-            switch(currentMenu)
+        {   
+            if (boxStyle == null)
+            {
+                boxStyle = new GUIStyle(GUI.skin.box);
+                boxStyle.normal.background = boxTexture;
+                boxStyle.normal.textColor = UnityEngine.Color.magenta;
+            }
+            if (labelStyle == null)
+            {
+                labelStyle = new GUIStyle(GUI.skin.label);
+                labelStyle.normal.textColor = UnityEngine.Color.magenta;
+            }
+            switch (currentMenu)
             {
                 case MenuState.Connection:
                     DrawConnectionMenu();
@@ -166,34 +188,45 @@ namespace ADOFAI_AP
 
         void DrawOptionsMenu()
         {
+            GUI.backgroundColor = UnityEngine.Color.magenta;
             GUILayout.BeginArea(new Rect(200, 50, 400, 400));
-            GUILayout.Label("Options");
+            GUILayout.Label("Options", labelStyle);
             // Add your options here
             if (GUILayout.Button("Back"))
             {
                 currentMenu = MenuState.Main; // Switch back to main menu
             }
             GUILayout.BeginHorizontal();
-            GUILayout.Label("DeathLink Mod:" + (ADOFAI_AP.Instance.client.DeathLinkMod_Disable ? "Disabled" : "Enabled"));
+            GUILayout.Label("DeathLink Mod:" + (ADOFAI_AP.Instance.client.DeathLinkMod_Disable ? "Disabled" : "Enabled"), labelStyle);
             if (GUILayout.Button(ADOFAI_AP.Instance.client.DeathLinkMod_Disable ? "Enable" : "Disable"))
             {
                 ADOFAI_AP.Instance.client.DeathLinkMod_Disable = !ADOFAI_AP.Instance.client.DeathLinkMod_Disable;
             }
             GUILayout.EndHorizontal();
-            GUILayout.Label("Number of deaths before sending a DeathLink:");
+            GUILayout.Label("Threshold of deaths (MaxHealth) before sending a DeathLink:", labelStyle);
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("-"))
             {
-                if (ADOFAI_AP.Instance.client.DeathLinkMod_CountBeforeDeath > 1)
-                    ADOFAI_AP.Instance.client.DeathLinkMod_CountBeforeDeath--;
+                if ( ADOFAI_AP.Instance.client.DeathLinkMod_MaxHealth.Value > 1)
+                {
+                    ADOFAI_AP.Instance.client.DeathLinkMod_MaxHealth.Value--;
+                    ADOFAI_AP.Instance.client.currentLife = ADOFAI_AP.Instance.client.DeathLinkMod_MaxHealth.Value; // Reset death count when changing threshold
+                    Notification.Instance.CreateNotification($"MaxHealth set to {ADOFAI_AP.Instance.client.DeathLinkMod_MaxHealth.Value}\nLifes reset");
+                }
             }
-            GUILayout.Label("" + ADOFAI_AP.Instance.client.DeathLinkMod_CountBeforeDeath);
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.Label("" + ADOFAI_AP.Instance.client.DeathLinkMod_MaxHealth.Value, labelStyle);
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
             if (GUILayout.Button("+"))
             {
-                ADOFAI_AP.Instance.client.DeathLinkMod_CountBeforeDeath++;
+                ADOFAI_AP.Instance.client.DeathLinkMod_MaxHealth.Value++;
+                ADOFAI_AP.Instance.client.currentLife = ADOFAI_AP.Instance.client.DeathLinkMod_MaxHealth.Value; // Reset death count when changing threshold
+                Notification.Instance.CreateNotification($"Threshold set to {ADOFAI_AP.Instance.client.DeathLinkMod_MaxHealth.Value}\nDeathCount reset");
             }
             GUILayout.EndHorizontal();
-            GUILayout.Label($"DeathLink Count Before Death: {ADOFAI_AP.Instance.client.DeathLinkMod_CountBeforeDeath - ADOFAI_AP.Instance.client.DeathCount}");
+            GUILayout.Label($"DeathLink Count Before Death: {ADOFAI_AP.Instance.client.currentLife}", labelStyle);
             GUILayout.TextField("Version: " + ADOFAI_AP.modVersion);
             GUILayout.EndArea();
         }
@@ -202,15 +235,15 @@ namespace ADOFAI_AP
         {
             GUI.backgroundColor = UnityEngine.Color.magenta;
             GUILayout.BeginArea(new Rect(200, 50, 400, 200));
-            GUILayout.Label("Connect to server");
+            GUILayout.Label("Connect to server", labelStyle);
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Username:");
+            GUILayout.Label("Username:", labelStyle);
             pseudo = GUILayout.TextField(pseudo, GUILayout.Width(100));
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Server IP:");
+            GUILayout.Label("Server IP:", labelStyle);
             serverIP = GUILayout.TextField(serverIP, GUILayout.Width(100));
-            GUILayout.Label("Port:");
+            GUILayout.Label("Port:", labelStyle);
             serverPort = GUILayout.TextField(serverPort, GUILayout.Width(50));
             if (GUILayout.Button("Connect"))
             {
@@ -231,7 +264,7 @@ namespace ADOFAI_AP
         {
             GUI.backgroundColor = UnityEngine.Color.magenta;
             GUILayout.BeginArea(new Rect(200, 50, 600, 600));
-            GUILayout.Label("Select a level");
+            GUILayout.Label("Select a level", labelStyle);
             if (GUILayout.Button("<"))
             {
                 currentMenu = MenuState.Main; // Switch back to main menu
@@ -322,12 +355,14 @@ namespace ADOFAI_AP
         void DrawMainMenu()
         {
             GUI.backgroundColor = UnityEngine.Color.magenta;
-            GUILayout.BeginArea(new Rect(200, 50, 200, 250));
+            GUILayout.BeginArea(new Rect(200, 50, 200, 300));
 
-            GUILayout.Label("ADOFAI AP Menu");
-            GUILayout.Label($"LastItem: {lastItem}");
-            GUILayout.Label($"{nbLocationsCompleted}/{nbNonGoalLocations} nongoal levels completed to reach your percentage goal");
-            GUILayout.Label(ADOFAI_AP.Instance.client.IsAllGoalLevelsCompleted()?"You completed all your goal levels": "You not completed all your goal levels");
+            GUILayout.Label("ADOFAI AP Menu", labelStyle);
+            GUILayout.Label($"LastItem: {lastItem}", labelStyle);
+            GUILayout.Label($"{nbLocationsCompleted}/{nbNonGoalLocations} nongoal levels completed to reach your percentage goal", labelStyle);
+            GUILayout.Label(ADOFAI_AP.Instance.client.IsAllGoalLevelsCompleted()?"You completed all your goal levels": "You not completed all your goal levels", labelStyle);
+            GUILayout.Label($"Session Deaths: {ADOFAI_AP.Instance.client.SessionDeathCount.Value}", labelStyle);
+            GUILayout.Label(ADOFAI_AP.Instance.client.DeathLinkMod_Disable ? "Deathlink disabled" :$"Deaths before sending a death: {ADOFAI_AP.Instance.client.currentLife}", labelStyle);
             if (GUILayout.Button("Level's selection"))
             {
                 currentMenu = MenuState.Selection; // Switch to connection menu
@@ -352,7 +387,8 @@ namespace ADOFAI_AP
             GUILayout.EndHorizontal();
             GUILayout.EndArea();
         }
-        
+
+
 
 
     }

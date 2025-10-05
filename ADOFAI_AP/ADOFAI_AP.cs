@@ -20,7 +20,7 @@ namespace ADOFAI_AP
     {
         public const string modGUID = "com.shotal.ADOFAI_AP";
         public const string modName = "ADOFAI_AP";
-        public const string modVersion = "1.0.0.0";
+        public const string modVersion = "1.0.3.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
 
@@ -35,6 +35,7 @@ namespace ADOFAI_AP
         internal ConfigEntry<string> pseudo;
         internal ConfigEntry<string> serverIP;
         internal ConfigEntry<string> serverPort;
+
 
         internal CLIENT_AP client = null;
 
@@ -62,6 +63,10 @@ namespace ADOFAI_AP
             pseudo = Config.Bind("ConnectionForm", "pseudo", "Shotal", "Pseudo for ConnectionForm");
             serverIP = Config.Bind("ConnectionForm", "IP", "localhost", "IP for ConnectionForm");
             serverPort = Config.Bind("ConnectionForm", "Port", "38281", "Port for ConnectionForm");
+
+            //DeathLinkMod_MaxHealth = Config.Bind("DeathLinkMod", "MaxHealth", 1, "Number of deaths before sending a DeathLink");
+            //SessionDeathCount = Config.Bind("DeathLinkMod", "SessionDeathCount", 0, "Number of DeathLink sent in this session");
+
 
             // Log
 
@@ -145,6 +150,11 @@ namespace ADOFAI_AP
             scrController.instance.paused = paused;
             //scrController.instance.audioPaused = scrController.instance.paused;
             Time.timeScale = (scrController.instance.paused ? 0f : 1f);
+        }
+
+        public ConfigEntry<T> BindConfig<T>(string group, string name, T value, String description = null)
+        {
+            return Config.Bind(group, name, value, description);
         }
 
     }
