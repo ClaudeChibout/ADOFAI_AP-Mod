@@ -242,7 +242,7 @@ namespace ADOFAI_AP.Patches
 
         public static Dictionary<string, bool> AprilFoolsWorldsKeys = new Dictionary<string, bool>()
         {
-            { "Key_Level_1J-X", true },
+            { "Key_Level_1J-X", false },
             { "Key_Level_2J-X", false },
             { "Key_Level_3J-X", false },
             { "Key_Level_4J-X", false },
