@@ -37,14 +37,14 @@ namespace ADOFAI_AP
         public int currentLife = 0;
         private Dictionary<string, object> progress;
 
-        public void Connect(string addr, int port, string slot)
+        public void Connect(string addr, int port, string slot, string password = null)
         {
             DeathLinkMod_Disable = true;
             string[] tags = new string[] { "DeathLink" };
             session = ArchipelagoSessionFactory.CreateSession(addr, port);
             ADOFAI_AP.Instance.mls.LogInfo($"session crée...");
             var isConnected = session.TryConnectAndLogin("A Dance of Fire and Ice", slot,
-                ItemsHandlingFlags.AllItems, new Version(0, 6, 3), tags);
+                ItemsHandlingFlags.AllItems, new Version(0, 6, 3), tags, null, password);
             ADOFAI_AP.Instance.mls.LogInfo($"is Connected ready {isConnected.Successful}");
 
 

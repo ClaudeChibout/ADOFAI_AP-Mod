@@ -32,6 +32,7 @@ namespace ADOFAI_AP
         internal string pseudo = ADOFAI_AP.Instance?.pseudo.Value;
         internal string serverIP = ADOFAI_AP.Instance?.serverIP.Value;
         internal string serverPort = ADOFAI_AP.Instance?.serverPort.Value;
+        internal string serverPassword = "";
 
         internal string lastItem = "None";
         internal bool showCheckedLocation = false;
@@ -245,10 +246,14 @@ namespace ADOFAI_AP
             serverIP = GUILayout.TextField(serverIP, GUILayout.Width(100));
             GUILayout.Label("Port:", labelStyle);
             serverPort = GUILayout.TextField(serverPort, GUILayout.Width(50));
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Password:", labelStyle);
+            serverPassword = GUILayout.PasswordField(serverPassword, '*', GUILayout.Width(100));
             if (GUILayout.Button("Connect"))
             {
                 ADOFAI_AP.Instance.mls.LogInfo($"Connecting to {serverIP}:{serverPort}...");
-                ADOFAI_AP.Instance.client.Connect(serverIP, int.Parse(serverPort), pseudo);
+                ADOFAI_AP.Instance.client.Connect(serverIP, int.Parse(serverPort), pseudo, serverPassword);
                 ADOFAI_AP.Instance.mls.LogInfo("Connected to server.");
 
                 ADOFAI_AP.Instance.pseudo.Value = pseudo;
