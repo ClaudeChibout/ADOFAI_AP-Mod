@@ -19,9 +19,18 @@ namespace ADOFAI_AP.Patches
             {
                 return true;
             }
-            ADOFAI_AP.Instance.mls.LogInfo($"OnLandOnPortal called: {portalDestination}\nargs: {portalArguments}");
-            ADOFAI_AP.Instance.mls.LogInfo($"LevelComplete: {scrController.currentLevel} !");
-            ADOFAI_AP.Instance.CollectLocation(scrController.currentLevel);
+            if (portalDestination == Portal.EndOfLevel)
+            {
+
+                if (GCS.practiceMode)
+                {
+                    Notification.Instance.CreateNotification("Practice mode detected, not sending location.");
+                    return true;
+                }
+                ADOFAI_AP.Instance.mls.LogInfo($"OnLandOnPortal called: {portalDestination}\nargs: {portalArguments}");
+                ADOFAI_AP.Instance.mls.LogInfo($"LevelComplete: {scrController.currentLevel} !");
+                ADOFAI_AP.Instance.CollectLocation(scrController.currentLevel);
+            }
             return true;
         }
 
@@ -38,6 +47,11 @@ namespace ADOFAI_AP.Patches
             if (___portalDestination == Portal.EndOfLevel)
             {   
                 
+                if (GCS.practiceMode)
+                {
+                    return true;
+                }
+
                 ADOFAI_AP.Instance.Menu.currentMenu = MENU_AP.MenuState.Selection;
                 Task.Delay(1000).ContinueWith(_ =>
                 {
