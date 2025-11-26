@@ -9,7 +9,23 @@ namespace ADOFAI_AP.Patches
 {
     [HarmonyPatch(typeof(scrController))]
     internal class ScrControllerPatch
-    {   
+    {
+
+        [HarmonyPatch("OnLandOnPortal")]
+        [HarmonyPrefix]
+	    static bool PatchOnLandOnPortal(Portal portalDestination, string portalArguments)
+        {
+            if (ADOFAI_AP.Instance.client.session == null)
+            {
+                return true;
+            }
+            ADOFAI_AP.Instance.mls.LogInfo($"OnLandOnPortal called: {portalDestination}\nargs: {portalArguments}");
+            ADOFAI_AP.Instance.mls.LogInfo($"LevelComplete: {scrController.currentLevel} !");
+            ADOFAI_AP.Instance.CollectLocation(scrController.currentLevel);
+            return true;
+        }
+
+
         [HarmonyPatch("PortalTravelAction")]
         [HarmonyPrefix]
         static bool PatchPortalTravelAction(ref Portal ___portalDestination, ref String ___portalArguments)
@@ -21,8 +37,7 @@ namespace ADOFAI_AP.Patches
                 ADOFAI_AP.Instance.mls.LogInfo($"PortalTravelAction called: {___portalDestination}\nargs: {___portalArguments}");
             if (___portalDestination == Portal.EndOfLevel)
             {   
-                ADOFAI_AP.Instance.mls.LogInfo($"LevelComplete: {scrController.currentLevel} !");
-                ADOFAI_AP.Instance.CollectLocation(scrController.currentLevel);
+                
                 ADOFAI_AP.Instance.Menu.currentMenu = MENU_AP.MenuState.Selection;
                 Task.Delay(1000).ContinueWith(_ =>
                 {
