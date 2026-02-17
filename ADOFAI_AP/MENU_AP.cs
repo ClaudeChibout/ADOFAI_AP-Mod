@@ -34,6 +34,8 @@ namespace ADOFAI_AP
         internal string serverPort = ADOFAI_AP.Instance?.serverPort.Value;
         internal string serverPassword = "";
 
+        internal bool sendLocationOnLandOnPortal = ADOFAI_AP.Instance?.SendLocationOnLandOnPortal.Value ?? true;
+
         internal string lastItem = "None";
         internal bool showCheckedLocation = false;
         internal bool hideGoalLocation = false;
@@ -227,6 +229,14 @@ namespace ADOFAI_AP
                 Notification.Instance.CreateNotification($"Threshold set to {ADOFAI_AP.Instance.client.DeathLinkMod_MaxHealth.Value}\nDeathCount reset");
             }
             GUILayout.EndHorizontal();
+
+            GUILayout.Label("sendLocationOnLandOnPortal: " + (sendLocationOnLandOnPortal ? "Enabled" : "Disabled"), labelStyle);
+            if (GUILayout.Button(sendLocationOnLandOnPortal ? "Disable" : "Enable"))
+            {
+                sendLocationOnLandOnPortal = !sendLocationOnLandOnPortal;
+                ADOFAI_AP.Instance.SendLocationOnLandOnPortal.Value = sendLocationOnLandOnPortal;
+            }
+
             GUILayout.Label($"DeathLink Count Before Death: {ADOFAI_AP.Instance.client.currentLife}", labelStyle);
             GUILayout.TextField("Version: " + ADOFAI_AP.modVersion);
             GUILayout.EndArea();

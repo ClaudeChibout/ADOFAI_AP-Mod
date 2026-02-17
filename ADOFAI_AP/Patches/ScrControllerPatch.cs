@@ -9,7 +9,16 @@ namespace ADOFAI_AP.Patches
 {
     [HarmonyPatch(typeof(scrController))]
     internal class ScrControllerPatch
-    {
+    {   
+
+        static void endLevel(){
+            // Collect the location of the player and send it to the server.
+            // Pure perfect notification is just a fun addition, it doesn't affect the location sending in any way.
+            // We log the level complete event and the current level for debugging purposes.
+            ADOFAI_AP.Instance.mls.LogInfo($"LevelComplete: {scrController.currentLevel} !");
+            if (PlanetarySystem.controller.mistakesManager.IsAllPurePerfect()) Notification.Instance.CreateNotification("PurePerfect !!!!!!!!!");
+            ADOFAI_AP.Instance.CollectLocation(scrController.currentLevel);
+        }
 
         [HarmonyPatch("OnLandOnPortal")]
         [HarmonyPrefix]
@@ -19,7 +28,7 @@ namespace ADOFAI_AP.Patches
             {
                 return true;
             }
-            if (portalDestination == Portal.EndOfLevel)
+            if (portalDestination == Portal.EndOfLevel && ADOFAI_AP.Instance.SendLocationOnLandOnPortal.Value)
             {
 
                 if (GCS.practiceMode)
@@ -28,8 +37,8 @@ namespace ADOFAI_AP.Patches
                     return true;
                 }
                 ADOFAI_AP.Instance.mls.LogInfo($"OnLandOnPortal called: {portalDestination}\nargs: {portalArguments}");
-                ADOFAI_AP.Instance.mls.LogInfo($"LevelComplete: {scrController.currentLevel} !");
-                ADOFAI_AP.Instance.CollectLocation(scrController.currentLevel);
+                ADOFAI_AP.Instance.mls.LogInfo("SendLocationOnLandOnPortal is enabled, so we send the location on landing");
+                endLevel();
             }
             return true;
         }
@@ -45,11 +54,17 @@ namespace ADOFAI_AP.Patches
             }
                 ADOFAI_AP.Instance.mls.LogInfo($"PortalTravelAction called: {___portalDestination}\nargs: {___portalArguments}");
             if (___portalDestination == Portal.EndOfLevel)
-            {   
-                
+            {
+
                 if (GCS.practiceMode)
                 {
                     return true;
+                }
+
+                if (!ADOFAI_AP.Instance.SendLocationOnLandOnPortal.Value)
+                {
+                    ADOFAI_AP.Instance.mls.LogInfo("SendLocationOnLandOnPortal is disabled, so we send the location on travel");
+                    endLevel();
                 }
 
                 ADOFAI_AP.Instance.Menu.currentMenu = MENU_AP.MenuState.Selection;

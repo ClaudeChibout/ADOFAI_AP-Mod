@@ -36,6 +36,8 @@ namespace ADOFAI_AP
         internal ConfigEntry<string> serverIP;
         internal ConfigEntry<string> serverPort;
 
+        internal ConfigEntry<bool> SendLocationOnLandOnPortal;
+
 
         internal CLIENT_AP client = null;
 
@@ -63,6 +65,7 @@ namespace ADOFAI_AP
             pseudo = Config.Bind("ConnectionForm", "pseudo", "Shotal", "Pseudo for ConnectionForm");
             serverIP = Config.Bind("ConnectionForm", "IP", "localhost", "IP for ConnectionForm");
             serverPort = Config.Bind("ConnectionForm", "Port", "38281", "Port for ConnectionForm");
+            SendLocationOnLandOnPortal = Config.Bind("Settings", "SendLocationOnLandOnPortal", true, "Send location when landing on a portal");
 
             //DeathLinkMod_MaxHealth = Config.Bind("DeathLinkMod", "MaxHealth", 1, "Number of deaths before sending a DeathLink");
             //SessionDeathCount = Config.Bind("DeathLinkMod", "SessionDeathCount", 0, "Number of DeathLink sent in this session");
