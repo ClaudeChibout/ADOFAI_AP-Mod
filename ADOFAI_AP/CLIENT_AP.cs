@@ -165,6 +165,14 @@ namespace ADOFAI_AP
                 {
                     LoadWorlds("april_fools_worlds", Data_AP.AprilFoolsWorlds, Data_AP.AprilFoolsWorldsKeys);
                 }
+                if ((bool)slotData["ar_world"])
+                {
+                    LoadWorlds("ar_world", Data_AP.ARWorld, Data_AP.ARWorldKeys);
+                }
+                if ((bool)slotData["ar_world_tuto"])
+                {
+                    LoadWorlds("ar_world_tuto", Data_AP.ARWorldTuto, Data_AP.ARWorldTutoKeys);
+                }
 
                 // Load goalLevels
                 foreach (var level in ((string)slotData["goal_levels"]).Split())

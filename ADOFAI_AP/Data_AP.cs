@@ -336,27 +336,27 @@ namespace ADOFAI_AP.Patches
             {"Key_Level_XS-6", false},
             {"Key_Level_XS-7", false},
             {"Key_Level_XS-8", false},
-        
+
             {"Key_Level_PA-1", false},
-        
+
             {"Key_Level_XH-1", false},
             {"Key_Level_XH-2", false},
             {"Key_Level_XH-3", false},
-        
+
             {"Key_Level_XC-1", false},
             {"Key_Level_XC-2", false},
             {"Key_Level_XC-3", false},
             {"Key_Level_XC-4", false},
             {"Key_Level_XC-5", false},
-        
+
             {"Key_Level_XF-1", false},
             {"Key_Level_XF-2", false},
             {"Key_Level_XF-3", false},
-        
+
             {"Key_Level_XR-1", false},
             {"Key_Level_XR-2", false},
             {"Key_Level_XR-3", false},
-        
+
             {"Key_Level_RJ-1", false},
             {"Key_Level_RJ-2", false},
             {"Key_Level_RJ-3", false},
@@ -364,15 +364,49 @@ namespace ADOFAI_AP.Patches
             {"Key_Level_RJ-5", false},
             {"Key_Level_RJ-6", false},
             {"Key_Level_RJ-7", false},
-        
+
             {"Key_Level_XN-1", false},
             {"Key_Level_XN-2", false},
             {"Key_Level_XN-3", false},
-        
+
             {"Key_Level_XM-1", false},
             {"Key_Level_XM-2", false},
             {"Key_Level_XM-3", false},
             {"Key_Level_XM-4", false}
+        };
+
+        public static Dictionary<string, bool> ARWorld = new Dictionary<string, bool>
+        {
+            {"AR-X", false}
+        };
+
+        public static Dictionary<string, bool> ARWorldKeys = new Dictionary<string, bool>
+        {
+            {"Key_Level_AR-X", false}
+        };
+
+        public static Dictionary<string, bool> ARWorldTuto = new Dictionary<string, bool>
+        {
+            { "AR-1", false },
+            { "AR-2", false },
+            { "AR-3", false },
+            { "AR-4", false },
+            { "AR-5", false },
+            { "AR-6", false },
+            { "AR-7", false },
+            { "AR-8", false },
+        };
+
+        public static Dictionary<string, bool> ARWorldTutoKeys = new Dictionary<string, bool>
+        {
+            { "Key_Level_AR-1", false },
+            { "Key_Level_AR-2", false },
+            { "Key_Level_AR-3", false },
+            { "Key_Level_AR-4", false },
+            { "Key_Level_AR-5", false },
+            { "Key_Level_AR-6", false },
+            { "Key_Level_AR-7", false },
+            { "Key_Level_AR-8", false },
         };
 
         public static Dictionary<string, bool> BWorld = new Dictionary<string, bool> {
