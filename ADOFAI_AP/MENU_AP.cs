@@ -48,6 +48,7 @@ namespace ADOFAI_AP
         internal bool BWorld = true;
         internal bool neonWorlds = true;
         internal bool neonExtraWorlds = true;
+        internal bool arWorld = true;
 
         internal int nbLocationsCompleted = 0;
         internal int nbNonGoalLocations = 0;
@@ -299,6 +300,9 @@ namespace ADOFAI_AP
             neonWorlds = GUILayout.Toggle(neonWorlds, "neonWorlds");
             neonExtraWorlds = GUILayout.Toggle(neonExtraWorlds, "neonExtraWorlds");
             GUILayout.EndVertical();
+            GUILayout.BeginVertical();
+            arWorld = GUILayout.Toggle(arWorld, "arWorld");
+            GUILayout.EndVertical();
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
             var cpt = 0;
@@ -314,6 +318,7 @@ namespace ADOFAI_AP
                 if ((Data_AP.BWorld.Keys.Contains(level.Substring(10)) || Data_AP.BWorldTuto.Keys.Contains(level.Substring(10))) && !BWorld) continue;
                 if ((Data_AP.NeonCosmosWorlds.Keys.Contains(level.Substring(10)) || Data_AP.NeonCosmosWorldsTuto.Keys.Contains(level.Substring(10))) && !neonWorlds) continue;
                 if ((Data_AP.NeonCosmosWorldsEX.Keys.Contains(level.Substring(10)) || Data_AP.NeonCosmosWorldsEXTuto.Keys.Contains(level.Substring(10))) && !neonExtraWorlds) continue;
+                if ((Data_AP.ARWorld.Keys.Contains(level.Substring(10)) || Data_AP.ARWorldTuto.Keys.Contains(level.Substring(10))) && !arWorld) continue;
 
                 // Skip levels that are not in the format "Key_Level_X-Y"
                 //ADOFAI_AP.Instance.mls.LogInfo($"Checking level: {level}");
