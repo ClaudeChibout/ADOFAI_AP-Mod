@@ -3,6 +3,8 @@ using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
+using Archipelago.MultiClient.Net.MessageLog.Messages;
+using Archipelago.MultiClient.Net.MessageLog.Parts;
 using Archipelago.MultiClient.Net.Models;
 using Archipelago.MultiClient.Net.Packets;
 using BepInEx;
@@ -31,6 +33,10 @@ namespace ADOFAI_AP
 
 
         private bool gameEnded = false;
+        private bool ready = false;
+        private const int MaxMessages = 200;
+        private readonly object messagesLock = new object();
+        private readonly List<APMessage> messages = new List<APMessage>();
         public bool DeathLinkMod_Disable = false;
         public ConfigEntry<int> DeathLinkMod_MaxHealth;
         public ConfigEntry<int> SessionDeathCount;
@@ -87,14 +93,10 @@ namespace ADOFAI_AP
                 }
                 Persistence.SetSavedProgress(progress);
                 ADOFAI_AP.Instance.mls.LogInfo($"Connected to Archipelago server at {addr}:{port} as {slot}.");
+                AddMessage("Status", $"Connected to Archipelago server at {addr}:{port} as {slot}.");
                 Notification.Instance.CreateNotification($"Connected to Archipelago server at {addr}:{port} as {slot}.");
                 ADOFAI_AP.Instance.Menu.isConnected = true;
                 ADOFAI_AP.Instance.Menu.currentMenu = MENU_AP.MenuState.Main;
-
-                Task.Delay(1000).ContinueWith(_ =>
-                {
-                    ADOFAI_AP.TogglePause(true);
-                });
 
                 ADOFAI_AP.Instance.mls.LogInfo("SlotData:");
                 var slotData = session.DataStorage.GetSlotData();
@@ -201,13 +203,13 @@ namespace ADOFAI_AP
                 ADOFAI_AP.Instance.Menu.nbLocationsCompleted = GetHowMuchLevelsCompleted();
 
                 ADOFAI_AP.Instance.mls.LogInfo($"Connected to Archipelago server at {addr}:{port} as {slot}.");
+                session.MessageLog.OnMessageReceived += HandleMessage;
                 session.Items.ItemReceived += (helper) =>
                 {
 
                     var lastItem = helper.AllItemsReceived[helper.Index - 1];
                     ADOFAI_AP.Instance.ReceiveItem(lastItem.ItemName);
                     if (gameEnded) return;
-                    Notification.Instance.CreateNotification($"You received: {lastItem.ItemName} from {lastItem.Player} !");
                     ADOFAI_AP.Instance.mls.LogInfo($"Received item: {lastItem.ItemName} (ID: {lastItem.ItemId})");
                 };
 
@@ -217,6 +219,7 @@ namespace ADOFAI_AP
                     session = null;
                     DL = null;
                     scrController.instance.QuitToMainMenu();
+                    AddMessage("Status", $"Connection lost to {addr}:{port}.");
                     Notification.Instance.CreateNotification($"Connection lost to {addr}:{port}.");
                 };
 
@@ -269,6 +272,7 @@ namespace ADOFAI_AP
             {
                 session = null;
                 ADOFAI_AP.Instance.mls.LogError($"Failed to connect to Archipelago server");
+                AddMessage("Error", "Failed to connect to Archipelago server");
                 Notification.Instance.CreateNotification("Failed to connect to Archipelago server");
                 ADOFAI_AP.Instance.Menu.currentMenu = MENU_AP.MenuState.Connection;
             }
@@ -276,7 +280,293 @@ namespace ADOFAI_AP
 
         public void SendMessage(string message)
         {
-            session.Socket.SendPacket(new SayPacket { Text = message });
+            session.Say(message);
+        }
+
+        public List<APMessage> GetMessagesSnapshot()
+        {
+            lock (messagesLock)
+            {
+                return new List<APMessage>(messages);
+            }
+        }
+
+        public void AddMessage(string category, string text, bool notify = false, string richText = null)
+        {
+            if (string.IsNullOrEmpty(text)) return;
+
+            lock (messagesLock)
+            {
+                messages.Add(new APMessage(category, text, richText ?? EscapeRichText(text)));
+                while (messages.Count > MaxMessages)
+                {
+                    messages.RemoveAt(0);
+                }
+            }
+
+            if (notify)
+            {
+                Notification.Instance.CreateNotification(text);
+            }
+        }
+
+        private void HandleMessage(LogMessage message)
+        {
+            string text = message.ToString();
+            string category = GetMessageCategory(message);
+            bool notify = message is ItemSendLogMessage || message is GoalLogMessage;
+
+            AddMessage(category, text, notify, FormatMessageParts(message));
+            ADOFAI_AP.Instance.mls.LogInfo($"AP {category}: {text}");
+        }
+
+        private string FormatMessageParts(LogMessage message)
+        {
+            StringBuilder builder = new StringBuilder();
+            foreach (MessagePart part in message.Parts)
+            {
+                builder.Append(FormatMessagePart(part));
+            }
+            return builder.ToString();
+        }
+
+        private string FormatMessagePart(MessagePart part)
+        {
+            string text = EscapeRichText(part.Text);
+            string color = GetRichTextColor(part);
+            if (string.IsNullOrEmpty(color))
+            {
+                return text;
+            }
+            return $"<color=#{color}>{text}</color>";
+        }
+
+        private string GetRichTextColor(MessagePart part)
+        {
+            if (!part.PaletteColor.HasValue) return "FFFFFF";
+
+            switch (part.PaletteColor.Value)
+            {
+                case Archipelago.MultiClient.Net.Colors.PaletteColor.Black:
+                    return "000000";
+                case Archipelago.MultiClient.Net.Colors.PaletteColor.Red:
+                    return "EE0000";
+                case Archipelago.MultiClient.Net.Colors.PaletteColor.Green:
+                    return "00FF7F";
+                case Archipelago.MultiClient.Net.Colors.PaletteColor.Blue:
+                    return "6495ED";
+                case Archipelago.MultiClient.Net.Colors.PaletteColor.Cyan:
+                    return "00EEEE";
+                case Archipelago.MultiClient.Net.Colors.PaletteColor.Magenta:
+                    return "EE00EE";
+                case Archipelago.MultiClient.Net.Colors.PaletteColor.Yellow:
+                    return "FAFAD2";
+                case Archipelago.MultiClient.Net.Colors.PaletteColor.SlateBlue:
+                    return "6D8BE8";
+                case Archipelago.MultiClient.Net.Colors.PaletteColor.Salmon:
+                    return "FA8072";
+                case Archipelago.MultiClient.Net.Colors.PaletteColor.Plum:
+                    return "AF99EF";
+                default:
+                    return "FFFFFF";
+            }
+        }
+
+        private string EscapeRichText(string text)
+        {
+            return (text ?? string.Empty)
+                .Replace("&", "&amp;")
+                .Replace("<", "&lt;")
+                .Replace(">", "&gt;");
+        }
+
+        private string GetMessageCategory(LogMessage message)
+        {
+            if (message is HintItemSendLogMessage) return "Hint";
+            if (message is ItemSendLogMessage) return "Item";
+            if (message is ChatLogMessage || message is ServerChatLogMessage) return "Chat";
+            if (message is GoalLogMessage) return "Goal";
+            if (message is ReleaseLogMessage) return "Release";
+            if (message is CollectLogMessage) return "Collect";
+            if (message is CommandResultLogMessage || message is AdminCommandResultLogMessage) return "Command";
+            if (message is JoinLogMessage) return "Join";
+            if (message is LeaveLogMessage) return "Leave";
+            return "Server";
+        }
+
+        public void HandleTextInput(string raw)
+        {
+            string text = (raw ?? string.Empty).Trim();
+            if (text.Length == 0) return;
+
+            if (text.StartsWith("/"))
+            {
+                RunLocalCommand(text);
+                return;
+            }
+
+            if (session == null)
+            {
+                AddMessage("Error", "Not connected.");
+                return;
+            }
+
+            SendMessage(text);
+        }
+
+        private void RunLocalCommand(string rawCommand)
+        {
+            string[] parts = rawCommand.Substring(1).Split(new char[] { ' ' }, 2, StringSplitOptions.RemoveEmptyEntries);
+            string command = parts.Length > 0 ? parts[0].ToLowerInvariant() : string.Empty;
+            string arg = parts.Length > 1 ? parts[1].Trim() : string.Empty;
+
+            switch (command)
+            {
+                case "help":
+                    AddMessage("Command", "/help /disconnect /received /missing [filter] /items /locations /item_groups [group] /location_groups [group] /ready");
+                    break;
+                case "disconnect":
+                    if (session == null)
+                    {
+                        AddMessage("Command", "Not connected.");
+                    }
+                    else
+                    {
+                        _ = Disconnect();
+                        AddMessage("Command", "Disconnected.");
+                    }
+                    break;
+                case "received":
+                    PrintReceivedItems();
+                    break;
+                case "missing":
+                    PrintMissingLocations(arg);
+                    break;
+                case "items":
+                    PrintMany("Items", AllKnownItems());
+                    break;
+                case "locations":
+                    PrintMany("Locations", AllKnownLocations());
+                    break;
+                case "item_groups":
+                    PrintGroups(session?.DataStorage.GetItemNameGroups(), arg, "Item groups");
+                    break;
+                case "location_groups":
+                    PrintGroups(session?.DataStorage.GetLocationNameGroups(), arg, "Location groups");
+                    break;
+                case "ready":
+                    if (session == null)
+                    {
+                        AddMessage("Command", "Not connected.");
+                    }
+                    else
+                    {
+                        ready = !ready;
+                        session.SetClientState(ready ? ArchipelagoClientState.ClientReady : ArchipelagoClientState.ClientConnected);
+                        AddMessage("Command", ready ? "Marked ready." : "Marked connected.");
+                    }
+                    break;
+                default:
+                    if (session != null)
+                    {
+                        SendMessage(rawCommand);
+                    }
+                    else
+                    {
+                        AddMessage("Error", $"Unknown command: /{command}");
+                    }
+                    break;
+            }
+        }
+
+        private void PrintReceivedItems()
+        {
+            if (session == null)
+            {
+                AddMessage("Command", "Not connected.");
+                return;
+            }
+
+            var lines = session.Items.AllItemsReceived.Select((item, index) =>
+                $"#{index + 1} {item.ItemDisplayName} from {item.Player} at {item.LocationDisplayName}");
+            PrintMany("Received", lines);
+        }
+
+        private void PrintMissingLocations(string filter)
+        {
+            if (session == null)
+            {
+                AddMessage("Command", "Not connected.");
+                return;
+            }
+
+            var lines = session.Locations.AllMissingLocations
+                .Select(id => session.Locations.GetLocationNameFromId(id, session.ConnectionInfo.Game))
+                .Where(name => string.IsNullOrEmpty(filter) || name.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0);
+            PrintMany("Missing", lines);
+        }
+
+        private IEnumerable<string> AllKnownItems()
+        {
+            return Data_AP.ItemsReceived.Keys
+                .Where(name => name != "Filler Note")
+                .Select(StripKeyPrefix)
+                .OrderBy(name => name);
+        }
+
+        private IEnumerable<string> AllKnownLocations()
+        {
+            return Data_AP.LocationsChecked.Keys.OrderBy(name => name);
+        }
+
+        private string StripKeyPrefix(string itemName)
+        {
+            const string prefix = "Key_Level_";
+            if (itemName.StartsWith(prefix)) return itemName.Substring(prefix.Length);
+            return itemName;
+        }
+
+        private void PrintMany(string category, IEnumerable<string> lines, int max = 100)
+        {
+            var list = lines.Take(max + 1).ToList();
+            if (list.Count == 0)
+            {
+                AddMessage(category, "None.");
+                return;
+            }
+
+            foreach (string line in list.Take(max))
+            {
+                AddMessage(category, line);
+            }
+
+            if (list.Count > max)
+            {
+                AddMessage(category, $"Showing first {max} results.");
+            }
+        }
+
+        private void PrintGroups(Dictionary<string, string[]> groups, string key, string label)
+        {
+            if (groups == null)
+            {
+                AddMessage("Command", "Not connected.");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(key))
+            {
+                AddMessage("Command", $"{label}: {string.Join(", ", groups.Keys.OrderBy(name => name).ToArray())}");
+                return;
+            }
+
+            if (!groups.ContainsKey(key))
+            {
+                AddMessage("Command", $"Unknown group: {key}");
+                return;
+            }
+
+            PrintMany("Command", groups[key].OrderBy(name => name));
         }
 
         public void ReportLocation(string name)
@@ -382,4 +672,3 @@ namespace ADOFAI_AP
 
     }
 }
-

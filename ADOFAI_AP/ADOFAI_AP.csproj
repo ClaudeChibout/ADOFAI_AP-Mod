@@ -78,6 +78,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="APMessage.cs" />
     <Compile Include="ADOFAI_AP.cs" />
     <Compile Include="CLIENT_AP.cs" />
     <Compile Include="MENU_AP.cs" />

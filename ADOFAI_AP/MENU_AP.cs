@@ -25,6 +25,7 @@ namespace ADOFAI_AP
             Main,           // Menu principal
             Selection,     // Menu de sélection de niveau
             Options,         // Menu des options
+            Messages,
         }
 
         internal MenuState currentMenu = MenuState.None;
@@ -52,6 +53,20 @@ namespace ADOFAI_AP
 
         internal int nbLocationsCompleted = 0;
         internal int nbNonGoalLocations = 0;
+        internal string messageInput = "";
+        private Vector2 messagesScroll = Vector2.zero;
+        private Rect connectionWindowRect = new Rect(200, 50, 400, 200);
+        private Rect mainWindowRect = new Rect(200, 50, 200, 300);
+        private Rect selectionWindowRect = new Rect(200, 50, 600, 600);
+        private Rect optionsWindowRect = new Rect(200, 50, 400, 400);
+        private Rect messagesWindowRect = new Rect(100, 50, 700, 520);
+        private int lastMessageCount = 0;
+        private float lastMessagesContentHeight = 0f;
+        private bool pausedForMessageInput = false;
+        private bool pauseStateBeforeMessageInput = false;
+        private float timeScaleBeforeMessageInput = 1f;
+        private Rect messageInputRect = Rect.zero;
+        private bool resizingMessagesWindow = false;
 
         // debug var
         internal long idLoc = 0;
@@ -95,17 +110,18 @@ namespace ADOFAI_AP
                 if (currentMenu == MenuState.None)
                 {
                     currentMenu = isConnected ? MenuState.Main : MenuState.Connection;
-                    ADOFAI_AP.TogglePause(true);
                 }
                 else {
                     currentMenu = MenuState.None;
-                    ADOFAI_AP.TogglePause(false);
+                    SetPausedForMessageInput(false);
                 }
             }
         }
 
         GUIStyle boxStyle;
         GUIStyle labelStyle;
+        GUIStyle messageLabelStyle;
+        GUIStyle windowStyle;
         void OnGUI()
         {   
             if (boxStyle == null)
@@ -118,6 +134,17 @@ namespace ADOFAI_AP
             {
                 labelStyle = new GUIStyle(GUI.skin.label);
                 labelStyle.normal.textColor = UnityEngine.Color.magenta;
+            }
+            if (messageLabelStyle == null)
+            {
+                messageLabelStyle = new GUIStyle(GUI.skin.label);
+                messageLabelStyle.normal.textColor = UnityEngine.Color.white;
+                messageLabelStyle.richText = true;
+                messageLabelStyle.wordWrap = true;
+            }
+            if (windowStyle == null)
+            {
+                windowStyle = new GUIStyle(GUIStyle.none);
             }
             switch (currentMenu)
             {
@@ -133,8 +160,15 @@ namespace ADOFAI_AP
                 case MenuState.Options:
                     DrawOptionsMenu();
                     break;
+                case MenuState.Messages:
+                    DrawMessagesMenu();
+                    break;
                 default:
                     break;
+            }
+            if (currentMenu != MenuState.Messages)
+            {
+                SetPausedForMessageInput(false);
             }
 
             // DrawDebugMenu();
@@ -193,7 +227,11 @@ namespace ADOFAI_AP
         void DrawOptionsMenu()
         {
             GUI.backgroundColor = UnityEngine.Color.magenta;
-            GUILayout.BeginArea(new Rect(200, 50, 400, 400));
+            optionsWindowRect = GUI.Window(9362, optionsWindowRect, DrawOptionsWindow, GUIContent.none, windowStyle);
+        }
+
+        void DrawOptionsWindow(int windowId)
+        {
             GUILayout.Label("Options", labelStyle);
             // Add your options here
             if (GUILayout.Button("Back"))
@@ -240,13 +278,17 @@ namespace ADOFAI_AP
 
             GUILayout.Label($"DeathLink Count Before Death: {ADOFAI_AP.Instance.client.currentLife}", labelStyle);
             GUILayout.TextField("Version: " + ADOFAI_AP.modVersion);
-            GUILayout.EndArea();
+            GUI.DragWindow(new Rect(0, 0, optionsWindowRect.width, optionsWindowRect.height));
         }
 
         void DrawConnectionMenu()
         {
             GUI.backgroundColor = UnityEngine.Color.magenta;
-            GUILayout.BeginArea(new Rect(200, 50, 400, 200));
+            connectionWindowRect = GUI.Window(9363, connectionWindowRect, DrawConnectionWindow, GUIContent.none, windowStyle);
+        }
+
+        void DrawConnectionWindow(int windowId)
+        {
             GUILayout.Label("Connect to server", labelStyle);
             GUILayout.BeginHorizontal();
             GUILayout.Label("Username:", labelStyle);
@@ -273,13 +315,17 @@ namespace ADOFAI_AP
 
             }
             GUILayout.EndHorizontal();
-            GUILayout.EndArea();
+            GUI.DragWindow(new Rect(0, 0, connectionWindowRect.width, connectionWindowRect.height));
         }
 
         void DrawSelectionMenu()
         {
             GUI.backgroundColor = UnityEngine.Color.magenta;
-            GUILayout.BeginArea(new Rect(200, 50, 600, 600));
+            selectionWindowRect = GUI.Window(9364, selectionWindowRect, DrawSelectionWindow, GUIContent.none, windowStyle);
+        }
+
+        void DrawSelectionWindow(int windowId)
+        {
             GUILayout.Label("Select a level", labelStyle);
             if (GUILayout.Button("<"))
             {
@@ -369,14 +415,18 @@ namespace ADOFAI_AP
             }
             GUILayout.EndHorizontal();
             GUI.backgroundColor = UnityEngine.Color.magenta;
-            GUILayout.EndArea();
+            GUI.DragWindow(new Rect(0, 0, selectionWindowRect.width, selectionWindowRect.height));
 
         }
         void DrawMainMenu()
         {
             GUI.backgroundColor = UnityEngine.Color.magenta;
-            GUILayout.BeginArea(new Rect(200, 50, 200, 300));
+            mainWindowRect.height = Math.Max(mainWindowRect.height, 380f);
+            mainWindowRect = GUI.Window(9365, mainWindowRect, DrawMainWindow, GUIContent.none, windowStyle);
+        }
 
+        void DrawMainWindow(int windowId)
+        {
             GUILayout.Label("ADOFAI AP Menu", labelStyle);
             GUILayout.Label($"LastItem: {lastItem}", labelStyle);
             GUILayout.Label($"{nbLocationsCompleted}/{nbNonGoalLocations} nongoal levels completed to reach your percentage goal", labelStyle);
@@ -387,10 +437,14 @@ namespace ADOFAI_AP
             {
                 currentMenu = MenuState.Selection; // Switch to connection menu
             }
+            if (GUILayout.Button("Messages"))
+            {
+                currentMenu = MenuState.Messages;
+            }
 
             if (GUILayout.Button("Disconnect"))
             {
-                ADOFAI_AP.Instance.client.Disconnect(); // Disconnect the user to the AP server
+                _ = ADOFAI_AP.Instance.client.Disconnect(); // Disconnect the user to the AP server
                 isConnected = false;
                 currentMenu = MenuState.Connection;
             }
@@ -398,14 +452,151 @@ namespace ADOFAI_AP
             if (GUILayout.Button("Close Menu"))
             {
                 currentMenu = MenuState.None;
-                ADOFAI_AP.TogglePause(false);
+                SetPausedForMessageInput(false);
             }
             if (GUILayout.Button("Options"))
             {
                 currentMenu = MenuState.Options;
             }
             GUILayout.EndHorizontal();
-            GUILayout.EndArea();
+            GUI.DragWindow(new Rect(0, 0, mainWindowRect.width, mainWindowRect.height));
+        }
+
+        void DrawMessagesMenu()
+        {
+            GUI.backgroundColor = UnityEngine.Color.magenta;
+            messagesWindowRect.width = Math.Max(messagesWindowRect.width, 420f);
+            messagesWindowRect.height = Math.Max(messagesWindowRect.height, 260f);
+            messagesWindowRect = GUI.Window(9361, messagesWindowRect, DrawMessagesWindow, GUIContent.none, windowStyle);
+        }
+
+        void DrawMessagesWindow(int windowId)
+        {
+            if (Event.current.type == EventType.MouseDown
+                && GUI.GetNameOfFocusedControl() == "APMessageInput"
+                && !messageInputRect.Contains(Event.current.mousePosition))
+            {
+                GUI.FocusControl(null);
+                SetPausedForMessageInput(false);
+            }
+
+            var messages = ADOFAI_AP.Instance.client.GetMessagesSnapshot();
+            float scrollHeight = Math.Max(120f, messagesWindowRect.height - 100f);
+            float innerWidth = Math.Max(260f, messagesWindowRect.width - 20f);
+            float scrollbarWidth = GetVerticalScrollbarWidth();
+            float messageWidth = Math.Max(240f, innerWidth - scrollbarWidth);
+            float previousMaxScroll = Math.Max(0f, lastMessagesContentHeight - scrollHeight);
+            bool wasAtBottom = messagesScroll.y >= previousMaxScroll - 20f;
+            bool hasNewMessages = messages.Count != lastMessageCount;
+
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("<", GUILayout.Width(40)))
+            {
+                SetPausedForMessageInput(false);
+                currentMenu = MenuState.Main;
+            }
+            GUILayout.Label("Archipelago Messages", labelStyle);
+            GUILayout.EndHorizontal();
+
+            if (hasNewMessages && wasAtBottom)
+            {
+                messagesScroll.y = float.MaxValue;
+            }
+
+            float contentHeight = 0f;
+            messagesScroll = GUILayout.BeginScrollView(messagesScroll, false, true, GUIStyle.none, GUI.skin.verticalScrollbar, boxStyle, GUILayout.Height(scrollHeight), GUILayout.Width(innerWidth));
+            foreach (var message in messages)
+            {
+                string line = $"<color=#808080>[{message.Time}] [{message.Category}]</color> {message.RichText}";
+                contentHeight += messageLabelStyle.CalcHeight(new GUIContent(line), messageWidth);
+                GUILayout.Label(line, messageLabelStyle, GUILayout.Width(messageWidth));
+            }
+            GUILayout.EndScrollView();
+            lastMessageCount = messages.Count;
+            lastMessagesContentHeight = contentHeight;
+
+            GUILayout.BeginHorizontal();
+            bool sendMessage = Event.current.type == EventType.KeyDown
+                && GUI.GetNameOfFocusedControl() == "APMessageInput"
+                && (Event.current.keyCode == KeyCode.Return || Event.current.keyCode == KeyCode.KeypadEnter);
+            if (sendMessage)
+            {
+                Event.current.Use();
+            }
+
+            GUI.SetNextControlName("APMessageInput");
+            messageInput = GUILayout.TextField(messageInput, GUILayout.Width(Math.Max(180f, innerWidth - 170f)));
+            messageInputRect = GUILayoutUtility.GetLastRect();
+            sendMessage = GUILayout.Button("Send", GUILayout.Width(80)) || sendMessage;
+            Rect resizeHandleRect = GUILayoutUtility.GetRect(new GUIContent("Resize"), GUI.skin.button, GUILayout.Width(80));
+            GUI.Box(resizeHandleRect, "Resize", GUI.skin.button);
+            if (sendMessage)
+            {
+                ADOFAI_AP.Instance.client.HandleTextInput(messageInput);
+                messageInput = "";
+            }
+            GUILayout.EndHorizontal();
+            SetPausedForMessageInput(GUI.GetNameOfFocusedControl() == "APMessageInput");
+            HandleMessagesResize(resizeHandleRect);
+            GUI.DragWindow(new Rect(0, 0, messagesWindowRect.width, messagesWindowRect.height));
+        }
+
+        private void HandleMessagesResize(Rect handleRect)
+        {
+            Event current = Event.current;
+            if (current.type == EventType.MouseDown && current.button == 0 && handleRect.Contains(current.mousePosition))
+            {
+                resizingMessagesWindow = true;
+                current.Use();
+            }
+
+            if (!resizingMessagesWindow) return;
+
+            if (current.type == EventType.MouseDrag)
+            {
+                messagesWindowRect.width = Math.Max(420f, messagesWindowRect.width + current.delta.x);
+                messagesWindowRect.height = Math.Max(260f, messagesWindowRect.height + current.delta.y);
+                current.Use();
+            }
+            else if (current.type == EventType.MouseUp || current.rawType == EventType.MouseUp)
+            {
+                resizingMessagesWindow = false;
+                current.Use();
+            }
+        }
+
+        private float GetVerticalScrollbarWidth()
+        {
+            GUIStyle scrollbar = GUI.skin.verticalScrollbar;
+            if (scrollbar == null) return 0f;
+
+            float width = scrollbar.fixedWidth;
+            if (width <= 0f)
+            {
+                width = scrollbar.CalcSize(GUIContent.none).x;
+            }
+            return width + scrollbar.margin.horizontal;
+        }
+
+        private void SetPausedForMessageInput(bool shouldPause)
+        {
+            if (pausedForMessageInput == shouldPause) return;
+
+            pausedForMessageInput = shouldPause;
+            if (shouldPause)
+            {
+                pauseStateBeforeMessageInput = scrController.instance != null && scrController.instance.paused;
+                timeScaleBeforeMessageInput = Time.timeScale;
+                ADOFAI_AP.TogglePause(true);
+            }
+            else
+            {
+                if (scrController.instance != null)
+                {
+                    scrController.instance.paused = pauseStateBeforeMessageInput;
+                }
+                Time.timeScale = timeScaleBeforeMessageInput;
+            }
         }
 
 
