@@ -55,7 +55,10 @@ namespace ADOFAI_AP
             for (int i = firstNotification; i < notificationCount; i++)
             {   
                 // Get the notification text from the dictionary
-                text = notifications[i];
+                if (!notifications.TryGetValue(i, out text))
+                {
+                    continue;
+                }
                 // Draw the notification on the screen
                 var yOffset = (i - firstNotification) * (Screen.height / yDivisor);
                 GUI.Label(new Rect(x + 10, y + yOffset + ((Screen.height / yDivisor) / 3), width - 20, height - 20), text);
@@ -88,7 +91,10 @@ namespace ADOFAI_AP
             scrSfx.instance.PlaySfx(SfxSound.AchievementBubbleClose, MixerGroup.InterfaceParent, .2f, 1f, 0f);
             ++firstNotification;
             // if there is notifications in buffer release the first one
-            Task.Delay(500).ContinueWith(_ => CreateNotification(buffer.Dequeue()));
+            if (buffer.Count > 0)
+            {
+                Task.Delay(500).ContinueWith(_ => CreateNotification(buffer.Dequeue()));
+            }
         }
 
     }
