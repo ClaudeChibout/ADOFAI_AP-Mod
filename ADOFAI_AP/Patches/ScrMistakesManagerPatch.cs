@@ -14,9 +14,9 @@ namespace ADOFAI_AP.Patches
     [HarmonyPatch(typeof(scrMistakesManager))]
     internal class ScrMistakesManagerPatch
     {
-        [HarmonyPatch("SaveProgress")]
-        [HarmonyPrefix]
-        public static bool PatchSaveProgress()
+        [HarmonyPatch("SaveCheckpointProgress")]
+        [HarmonyPostfix]
+        public static void PatchSaveProgress()
         {
             if (ADOFAI_AP.Instance.client.session != null)
             {
@@ -28,7 +28,6 @@ namespace ADOFAI_AP.Patches
                 string json = JsonConvert.SerializeObject(Persistence.GetSavedProgress(), Formatting.Indented);
                 File.WriteAllText(filePath, json);
             }
-            return true;
         }
     }
 }
