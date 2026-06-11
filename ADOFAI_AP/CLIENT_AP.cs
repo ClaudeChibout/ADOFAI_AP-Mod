@@ -90,11 +90,7 @@ namespace ADOFAI_AP
                 Notification.Instance.CreateNotification($"Connected to Archipelago server at {addr}:{port} as {slot}.");
                 ADOFAI_AP.Instance.Menu.isConnected = true;
                 ADOFAI_AP.Instance.Menu.currentMenu = MENU_AP.MenuState.Main;
-
-                Task.Delay(1000).ContinueWith(_ =>
-                {
-                    ADOFAI_AP.TogglePause(true);
-                });
+                // Pause is enforced by MENU_AP.SyncPause() as soon as the menu state is non-None.
 
                 ADOFAI_AP.Instance.mls.LogInfo("SlotData:");
                 var slotData = session.DataStorage.GetSlotData();
