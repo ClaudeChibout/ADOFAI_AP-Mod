@@ -76,39 +76,61 @@ namespace ADOFAI_AP
             mls = BepInEx.Logging.Logger.CreateLogSource(modGUID);
             mls.LogInfo($"Plugin {modName} is starting...");
 
-            // Patch
+            // Menu / Notif / Client are created FIRST so that a failing Harmony
+            // patch (see SafePatch below) can never prevent the in-game UI from loading.
 
-            harmony.PatchAll(typeof(ADOFAI_AP));
-            mls.LogInfo("ADOFAI_AP loaded!");
-            harmony.PatchAll(typeof(ScrControllerPatch));
-            mls.LogInfo("ScrControllerPatch loaded!");
-            harmony.PatchAll(typeof(PlanetarySystemPatch));
-            mls.LogInfo("PlanetarySystemPatch loaded!");
-            harmony.PatchAll(typeof(PauseLevelPatch));
-            mls.LogInfo("PauseMenuPatch loaded!");
-            mls.LogInfo($"Plugin {modName} is loaded!");
-            harmony.PatchAll(typeof(ScrMistakesManagerPatch));
-            mls.LogInfo("scrMistakesManagerPatch loaded!");
+            try
+            {
+                var menuObject = new GameObject("ADOFAI_AP_Menu");
+                UnityEngine.Object.DontDestroyOnLoad(menuObject);
+                menuObject.hideFlags = HideFlags.HideAndDontSave;
+                menuObject.AddComponent<MENU_AP>();
+                Menu = menuObject.GetComponent<MENU_AP>();
 
-            // Menu
+                var notifObject = new GameObject("ADOFAI_AP_Notification");
+                UnityEngine.Object.DontDestroyOnLoad(notifObject);
+                notifObject.hideFlags = HideFlags.HideAndDontSave;
+                notifObject.AddComponent<Notification>();
 
-            var menuObject = new GameObject("ADOFAI_AP_Menu");
-            UnityEngine.Object.DontDestroyOnLoad(menuObject);
-            menuObject.hideFlags = HideFlags.HideAndDontSave;
-            menuObject.AddComponent<MENU_AP>();
-            Menu = menuObject.GetComponent<MENU_AP>();
+                client = new CLIENT_AP();
 
-            // Notif
+                mls.LogInfo("Menu, Notification and Client initialized.");
+            }
+            catch (Exception e)
+            {
+                mls.LogError($"FATAL: failed to initialize Menu/Notification/Client: {e}");
+            }
 
-            var notifObject = new GameObject("ADOFAI_AP_Notification");
-            UnityEngine.Object.DontDestroyOnLoad(notifObject);
-            notifObject.hideFlags = HideFlags.HideAndDontSave;
-            notifObject.AddComponent<Notification>();
+            // Patches — each one is applied independently and guarded, so that a patch
+            // targeting a method that does not exist in the current game version only
+            // disables that single feature instead of aborting the whole Awake().
 
-            // Client
+            SafePatch(typeof(ADOFAI_AP));
+            SafePatch(typeof(ScrControllerPatch));
+            SafePatch(typeof(PlanetarySystemPatch));
+            SafePatch(typeof(PauseLevelPatch));
 
-            client = new CLIENT_AP();
+            mls.LogInfo($"Plugin {modName} is loaded! (Unity {Application.unityVersion})");
+        }
 
+        /// <summary>
+        /// Applies all Harmony patches declared in <paramref name="patchType"/>, logging the
+        /// outcome. A failure (e.g. a target method missing in the current game build) is logged
+        /// and swallowed so it cannot break the rest of the mod.
+        /// </summary>
+        private void SafePatch(Type patchType)
+        {
+            try
+            {
+                harmony.PatchAll(patchType);
+                mls.LogInfo($"[Patch] {patchType.Name} applied.");
+            }
+            catch (Exception e)
+            {
+                mls.LogError($"[Patch] FAILED to apply {patchType.Name}: {e.Message}");
+                mls.LogError($"[Patch] '{patchType.Name}' is disabled; the mod keeps running without it. " +
+                             "A target method probably no longer exists in this game version.");
+            }
         }
 
         void Update()
@@ -134,6 +156,21 @@ namespace ADOFAI_AP
         internal void ReceiveItem(string itemName)
         {
             Data_AP.ItemsReceived[itemName] = true;
+
+            // A received "Key_Level_X" unlocks level "X". Make sure the matching location
+            // exists in LocationsChecked so the level shows up in the selection menu, even
+            // if that world group was not pre-loaded at connect (e.g. an item sent manually
+            // from the server, or a world option that was not enabled).
+            if (itemName.StartsWith("Key_Level_"))
+            {
+                string levelName = itemName.Substring("Key_Level_".Length);
+                if (!Data_AP.LocationsChecked.ContainsKey(levelName))
+                {
+                    Data_AP.LocationsChecked[levelName] = false;
+                    mls.LogInfo($"[Item] Registered location '{levelName}' from received item '{itemName}'.");
+                }
+            }
+
             Menu.lastItem = itemName;
         }
 
@@ -150,6 +187,11 @@ namespace ADOFAI_AP
 
         public static void TogglePause(bool paused)
         {
+            if (scrController.instance == null)
+            {
+                Instance?.mls.LogWarning("TogglePause skipped: scrController.instance is null (no active controller).");
+                return;
+            }
             scrController.instance.paused = paused;
             //scrController.instance.audioPaused = scrController.instance.paused;
             Time.timeScale = (scrController.instance.paused ? 0f : 1f);

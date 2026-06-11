@@ -1,6 +1,9 @@
-﻿using HarmonyLib;
+﻿using BepInEx;
+using HarmonyLib;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -68,10 +71,7 @@ namespace ADOFAI_AP.Patches
                 }
 
                 ADOFAI_AP.Instance.Menu.currentMenu = MENU_AP.MenuState.Selection;
-                Task.Delay(1000).ContinueWith(_ =>
-                {
-                    ADOFAI_AP.TogglePause(true);
-                });
+                // Pause is enforced by MENU_AP.SyncPause() while the menu is open.
                 scrController.instance.QuitToMainMenu();
 
                 return false;
@@ -156,5 +156,29 @@ namespace ADOFAI_AP.Patches
             return true;
         }
 
+        [HarmonyPatch("SaveProgress")]
+        [HarmonyPrefix]
+        public static bool PatchSaveProgress(bool save)
+        {
+            try
+            {
+                if (ADOFAI_AP.Instance?.client?.session != null)
+                {
+                    string saveFolder = Path.Combine(Paths.ConfigPath, "ArchipelagoSessions");
+                    Directory.CreateDirectory(saveFolder);
+                    string sessionSeed = ADOFAI_AP.Instance.client.session.RoomState.Seed;
+                    string filePath = Path.Combine(saveFolder, $"{sessionSeed}.dat");
+                    ADOFAI_AP.Instance.mls.LogInfo($"[Save] Persisting Archipelago progress for seed:{sessionSeed} (save={save})");
+                    string json = JsonConvert.SerializeObject(Persistence.GetSavedProgress(), Formatting.Indented);
+                    File.WriteAllText(filePath, json);
+                }
+            }
+            catch (Exception e)
+            {
+                // Never let our persistence break the game's own SaveProgress call.
+                ADOFAI_AP.Instance?.mls.LogError($"[Save] Failed to persist Archipelago progress: {e.Message}");
+            }
+            return true; // always let the original SaveProgress run
+        }
     }
 }
