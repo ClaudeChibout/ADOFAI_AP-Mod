@@ -20,7 +20,7 @@ namespace ADOFAI_AP
     {
         public const string modGUID = "com.shotal.ADOFAI_AP";
         public const string modName = "ADOFAI_AP";
-        public const string modVersion = "1.0.3.0";
+        public const string modVersion = "1.0.9.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
 

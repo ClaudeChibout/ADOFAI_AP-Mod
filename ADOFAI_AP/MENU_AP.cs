@@ -50,6 +50,8 @@ namespace ADOFAI_AP
         internal bool neonWorlds = true;
         internal bool neonExtraWorlds = true;
         internal bool arWorld = true;
+        internal bool cosmicRadioWorld = true;
+        internal bool cosmicRadioExWorld = true;
 
         internal int nbLocationsCompleted = 0;
         internal int nbNonGoalLocations = 0;
@@ -672,6 +674,8 @@ namespace ADOFAI_AP
             neonWorlds = ToggleButton(neonWorlds, "Neon worlds");
             neonExtraWorlds = ToggleButton(neonExtraWorlds, "Neon extra worlds");
             arWorld = ToggleButton(arWorld, "AR world");
+            cosmicRadioWorld = ToggleButton(cosmicRadioWorld, "Cosmic Radio worlds");
+            cosmicRadioExWorld = ToggleButton(cosmicRadioExWorld, "Cosmic Radio EX world");
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
 
@@ -710,6 +714,8 @@ namespace ADOFAI_AP
                 if ((Data_AP.NeonCosmosWorlds.Keys.Contains(name) || Data_AP.NeonCosmosWorldsTuto.Keys.Contains(name)) && !neonWorlds) continue;
                 if ((Data_AP.NeonCosmosWorldsEX.Keys.Contains(name) || Data_AP.NeonCosmosWorldsEXTuto.Keys.Contains(name)) && !neonExtraWorlds) continue;
                 if ((Data_AP.ARWorld.Keys.Contains(name) || Data_AP.ARWorldTuto.Keys.Contains(name)) && !arWorld) continue;
+                if ((Data_AP.CosmicRadioWorlds.Keys.Contains(name) || Data_AP.CosmicRadioWorldsTuto.Keys.Contains(name)) && !cosmicRadioWorld) continue;
+                if (Data_AP.CosmicRadioWorldsEX.Keys.Contains(name) && !cosmicRadioExWorld) continue;
 
                 try
                 {

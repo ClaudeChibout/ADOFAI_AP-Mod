@@ -687,6 +687,56 @@ namespace ADOFAI_AP.Patches
             {"Key_Level_T4EX-4", false}
         };
 
+        // Cosmic Radio Island (CE / CI). Base-game extra worlds, no DLC required.
+        public static Dictionary<string, bool> CosmicRadioWorlds = new Dictionary<string, bool>
+        {
+            {"CE-X", false},
+            {"CI-X", false}
+        };
+
+        public static Dictionary<string, bool> CosmicRadioWorldsKeys = new Dictionary<string, bool>
+        {
+            {"Key_Level_CE-X", false},
+            {"Key_Level_CI-X", false}
+        };
+
+        public static Dictionary<string, bool> CosmicRadioWorldsTuto = new Dictionary<string, bool>
+        {
+            {"CE-1", false},
+            {"CE-2", false},
+            {"CE-3", false},
+            {"CE-4", false},
+            {"CE-5", false},
+
+            {"CI-1", false},
+            {"CI-2", false},
+            {"CI-3", false}
+        };
+
+        public static Dictionary<string, bool> CosmicRadioWorldsTutoKeys = new Dictionary<string, bool>
+        {
+            {"Key_Level_CE-1", false},
+            {"Key_Level_CE-2", false},
+            {"Key_Level_CE-3", false},
+            {"Key_Level_CE-4", false},
+            {"Key_Level_CE-5", false},
+
+            {"Key_Level_CI-1", false},
+            {"Key_Level_CI-2", false},
+            {"Key_Level_CI-3", false}
+        };
+
+        // Cosmic Radio EX (CE-TX). Separate category due to its extreme difficulty.
+        public static Dictionary<string, bool> CosmicRadioWorldsEX = new Dictionary<string, bool>
+        {
+            {"CE-TX", false}
+        };
+
+        public static Dictionary<string, bool> CosmicRadioWorldsEXKeys = new Dictionary<string, bool>
+        {
+            {"Key_Level_CE-TX", false}
+        };
+
 
 
 

@@ -169,6 +169,18 @@ namespace ADOFAI_AP
                 {
                     LoadWorlds("ar_world_tuto", Data_AP.ARWorldTuto, Data_AP.ARWorldTutoKeys);
                 }
+                if ((bool)slotData["cosmic_radio_worlds"])
+                {
+                    LoadWorlds("cosmic_radio_worlds", Data_AP.CosmicRadioWorlds, Data_AP.CosmicRadioWorldsKeys);
+                }
+                if ((bool)slotData["cosmic_radio_worlds_tuto"])
+                {
+                    LoadWorlds("cosmic_radio_worlds_tuto", Data_AP.CosmicRadioWorldsTuto, Data_AP.CosmicRadioWorldsTutoKeys);
+                }
+                if ((bool)slotData["cosmic_radio_worlds_ex"])
+                {
+                    LoadWorlds("cosmic_radio_worlds_ex", Data_AP.CosmicRadioWorldsEX, Data_AP.CosmicRadioWorldsEXKeys);
+                }
 
                 // Load goalLevels
                 foreach (var level in ((string)slotData["goal_levels"]).Split())
